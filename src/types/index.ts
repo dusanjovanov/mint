@@ -1,4 +1,4 @@
-export * from "./css";
+export type { CSSObject } from "./css";
 export * from "./events";
 export * from "./html";
 export * from "./nodes";
