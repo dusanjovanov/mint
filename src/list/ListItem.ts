@@ -15,9 +15,9 @@ export class ListItem<Item> {
     this.index = new State(index, el.app.ctx);
     this.computedIndex = new Computed(() => this.index.value, el.app.ctx);
     this.el = el;
-    const mintNode = this.el._renderItem(this.item, this.computedIndex);
+    const smllrNode = this.el._renderItem(this.item, this.computedIndex);
     this.els = this.el.app.createElements({
-      node: mintNode,
+      node: smllrNode,
       parent: this.el,
       startIndex: index,
     });

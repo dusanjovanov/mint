@@ -5,18 +5,18 @@ export type TextNode = string | number;
 
 export type EmptyNode = boolean | null | undefined;
 
-export type MintNode =
+export type SmllrNode =
   | TextNode
   | EmptyNode
-  | MintElement
+  | SmllrElement
   | (() => TextNode)
-  | MintNode[];
+  | SmllrNode[];
 
-export type MintElement = {
+export type SmllrElement = {
   _brand: symbol;
   _type: symbol;
-  children?: MintElement[];
-  _parent: MintElement;
+  children?: SmllrElement[];
+  _parent: SmllrElement;
   _index: number;
   app: App;
   _getNodes(): DomNode[];

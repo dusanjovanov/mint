@@ -66,12 +66,12 @@ export const SVG_MAP = svgTags.reduce((m, t) => {
   return m;
 }, {} as Record<keyof SVGElementTagNameMap, boolean>);
 
-export const MINT_EL_BRAND = Symbol.for("mint-el");
+export const SMLLR_EL_BRAND = Symbol.for("smllr-el");
 
-export const MINT_EL_TYPES = {
-  html: Symbol.for("mint-html"),
-  text: Symbol.for("mint-text"),
-  show: Symbol.for("mint-show"),
-  cmp: Symbol.for("mint-cmp"),
-  list: Symbol.for("mint-list"),
+export const SMLLR_EL_TYPES = {
+  html: Symbol.for("smllr-html"),
+  text: Symbol.for("smllr-text"),
+  show: Symbol.for("smllr-show"),
+  cmp: Symbol.for("smllr-cmp"),
+  list: Symbol.for("smllr-list"),
 };

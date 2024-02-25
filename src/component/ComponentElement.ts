@@ -1,10 +1,10 @@
 import { App } from "..";
-import { MINT_EL_BRAND, MINT_EL_TYPES } from "../constants";
+import { SMLLR_EL_BRAND, SMLLR_EL_TYPES } from "../constants";
 import { Sub } from "../reactive";
-import { MintElement, MintNode } from "../types";
+import { SmllrElement, SmllrNode } from "../types";
 import { ComponentApi } from "./ComponentApi";
 
-export class ComponentElement<Props> implements MintElement {
+export class ComponentElement<Props> implements SmllrElement {
   constructor({
     render,
     props,
@@ -16,10 +16,10 @@ export class ComponentElement<Props> implements MintElement {
     this._props = props;
   }
 
-  _brand = MINT_EL_BRAND;
-  _type = MINT_EL_TYPES.cmp;
-  children: MintElement[] = [];
-  _parent!: MintElement;
+  _brand = SMLLR_EL_BRAND;
+  _type = SMLLR_EL_TYPES.cmp;
+  children: SmllrElement[] = [];
+  _parent!: SmllrElement;
   _index!: number;
   app!: App;
   _isInserted = false;
@@ -50,8 +50,8 @@ export class ComponentElement<Props> implements MintElement {
   }
 
   _create() {
-    const mintNode = this._render(new ComponentApi(this));
-    this.children = this.app.createElements({ node: mintNode, parent: this });
+    const smllrNode = this._render(new ComponentApi(this));
+    this.children = this.app.createElements({ node: smllrNode, parent: this });
   }
 
   _toDom(): Node | Node[] {
@@ -74,4 +74,4 @@ export const cmp =
     });
   };
 
-type ComponentRenderFn<Props> = ($: ComponentApi<Props>) => MintNode;
+type ComponentRenderFn<Props> = ($: ComponentApi<Props>) => SmllrNode;

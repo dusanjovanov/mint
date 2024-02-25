@@ -4,12 +4,12 @@ import {
   Booleanish,
   CSSProperties,
   CrossOrigin,
-  MintDomProps,
+  SmllrDomProps,
   ReactiveProps,
 } from "./shared";
 
-export type MintHTMLElementProps<T extends HTMLElement> =
-  ReactiveProps<HTMLAttributes> & MintDomProps<T>;
+export type SmllrHTMLElementProps<T extends HTMLElement> =
+  ReactiveProps<HTMLAttributes> & SmllrDomProps<T>;
 
 export type HTMLElementPropMap = {
   a: HTMLAnchorElementProps;
@@ -433,53 +433,53 @@ export type HTMLAttributes = {
   "aria-valuetext"?: string | undefined;
 };
 
-export type HTMLElementProps = MintHTMLElementProps<HTMLElement>;
+export type HTMLElementProps = SmllrHTMLElementProps<HTMLElement>;
 
-export type HTMLDivElementProps = MintHTMLElementProps<HTMLDivElement>;
+export type HTMLDivElementProps = SmllrHTMLElementProps<HTMLDivElement>;
 
-export type HTMLUListElementProps = MintHTMLElementProps<HTMLUListElement>;
+export type HTMLUListElementProps = SmllrHTMLElementProps<HTMLUListElement>;
 
-export type HTMLLIElementProps = MintHTMLElementProps<HTMLLIElement>;
+export type HTMLLIElementProps = SmllrHTMLElementProps<HTMLLIElement>;
 
-export type HTMLHeadingElementProps = MintHTMLElementProps<HTMLHeadingElement>;
+export type HTMLHeadingElementProps = SmllrHTMLElementProps<HTMLHeadingElement>;
 
-export type HTMLTableRowProps = MintHTMLElementProps<HTMLTableRowElement>;
+export type HTMLTableRowProps = SmllrHTMLElementProps<HTMLTableRowElement>;
 
-export type HTMLSpanElementProps = MintHTMLElementProps<HTMLSpanElement>;
+export type HTMLSpanElementProps = SmllrHTMLElementProps<HTMLSpanElement>;
 
 export type HTMLTableSectionElementProps =
-  MintHTMLElementProps<HTMLTableSectionElement>;
+  SmllrHTMLElementProps<HTMLTableSectionElement>;
 
-export type HTMLBRElementProps = MintHTMLElementProps<HTMLBRElement>;
+export type HTMLBRElementProps = SmllrHTMLElementProps<HTMLBRElement>;
 
-export type HTMLHRElementProps = MintHTMLElementProps<HTMLHRElement>;
+export type HTMLHRElementProps = SmllrHTMLElementProps<HTMLHRElement>;
 
-export type HTMLLegendElementProps = MintHTMLElementProps<HTMLLegendElement>;
+export type HTMLLegendElementProps = SmllrHTMLElementProps<HTMLLegendElement>;
 
 export type HTMLParagraphElementProps =
-  MintHTMLElementProps<HTMLParagraphElement>;
+  SmllrHTMLElementProps<HTMLParagraphElement>;
 
-export type HTMLPreElementProps = MintHTMLElementProps<HTMLPreElement>;
+export type HTMLPreElementProps = SmllrHTMLElementProps<HTMLPreElement>;
 
-export type HTMLAudioElementProps = MintHTMLElementProps<HTMLAudioElement>;
+export type HTMLAudioElementProps = SmllrHTMLElementProps<HTMLAudioElement>;
 
-export type HTMLBodyElementProps = MintHTMLElementProps<HTMLBodyElement>;
+export type HTMLBodyElementProps = SmllrHTMLElementProps<HTMLBodyElement>;
 
 export type HTMLDataListElementProps =
-  MintHTMLElementProps<HTMLDataListElement>;
+  SmllrHTMLElementProps<HTMLDataListElement>;
 
-export type HTMLDListElementProps = MintHTMLElementProps<HTMLDListElement>;
+export type HTMLDListElementProps = SmllrHTMLElementProps<HTMLDListElement>;
 
-export type HTMLHeadElementProps = MintHTMLElementProps<HTMLHeadElement>;
+export type HTMLHeadElementProps = SmllrHTMLElementProps<HTMLHeadElement>;
 
-export type HTMLHtmlElementProps = MintHTMLElementProps<HTMLHtmlElement>;
+export type HTMLHtmlElementProps = SmllrHTMLElementProps<HTMLHtmlElement>;
 
 export type HTMLModElementAttributes = {
   cite?: string | undefined;
   dateTime?: string | undefined;
 };
 
-export type HTMLModElementProps = MintHTMLElementProps<HTMLModElement> &
+export type HTMLModElementProps = SmllrHTMLElementProps<HTMLModElement> &
   HTMLModElementAttributes;
 
 export type HTMLAttributeAnchorTarget =
@@ -511,7 +511,7 @@ export type HTMLAnchorElementAtributes = {
   referrerPolicy?: HTMLAttributeReferrerPolicy | undefined;
 };
 
-export type HTMLAnchorElementProps = MintHTMLElementProps<HTMLAnchorElement> &
+export type HTMLAnchorElementProps = SmllrHTMLElementProps<HTMLAnchorElement> &
   ReactiveProps<HTMLAnchorElementAtributes>;
 
 export type HTMLAreaElementAttributes = {
@@ -526,7 +526,7 @@ export type HTMLAreaElementAttributes = {
   target?: string | undefined;
 };
 
-export type HTMLAreaElementProps = MintHTMLElementProps<HTMLAreaElement> &
+export type HTMLAreaElementProps = SmllrHTMLElementProps<HTMLAreaElement> &
   HTMLAreaElementAttributes;
 
 export type HTMLBaseElementAttributes = {
@@ -534,7 +534,7 @@ export type HTMLBaseElementAttributes = {
   target?: string | undefined;
 };
 
-export type HTMLBaseElementProps = MintHTMLElementProps<HTMLBaseElement> &
+export type HTMLBaseElementProps = SmllrHTMLElementProps<HTMLBaseElement> &
   HTMLBaseElementAttributes;
 
 export type HTMLButtonElementAttributes = {
@@ -550,7 +550,7 @@ export type HTMLButtonElementAttributes = {
   value?: string | ReadonlyArray<string> | number | undefined;
 };
 
-export type HTMLButtonElementProps = MintHTMLElementProps<HTMLButtonElement> &
+export type HTMLButtonElementProps = SmllrHTMLElementProps<HTMLButtonElement> &
   HTMLButtonElementAttributes;
 
 export type HTMLCanvasElementAttributes = {
@@ -558,7 +558,7 @@ export type HTMLCanvasElementAttributes = {
   width?: number | string | undefined;
 };
 
-export type HTMLCanvasElementProps = MintHTMLElementProps<HTMLCanvasElement> &
+export type HTMLCanvasElementProps = SmllrHTMLElementProps<HTMLCanvasElement> &
   HTMLCanvasElementAttributes;
 
 export type HTMLTableColElementAttributes = {
@@ -567,21 +567,21 @@ export type HTMLTableColElementAttributes = {
 };
 
 export type HTMLTableColElementProps =
-  MintHTMLElementProps<HTMLTableColElement> & HTMLTableColElementAttributes;
+  SmllrHTMLElementProps<HTMLTableColElement> & HTMLTableColElementAttributes;
 
 export type HTMLTableColGroupElementAttributes = {
   span?: number | undefined;
 };
 
 export type HTMLTableColGroupElementProps =
-  MintHTMLElementProps<HTMLTableColElement> &
+  SmllrHTMLElementProps<HTMLTableColElement> &
     HTMLTableColGroupElementAttributes;
 
 export type HTMLDataElementAttributes = {
   value?: string | ReadonlyArray<string> | number | undefined;
 };
 
-export type HTMLDataElementProps = MintHTMLElementProps<HTMLDataElement> &
+export type HTMLDataElementProps = SmllrHTMLElementProps<HTMLDataElement> &
   HTMLDataElementAttributes;
 
 export type HTMLDetailsElementAttributes = {
@@ -592,9 +592,10 @@ export type HTMLDetailsElementEvents = {
   onToggle?: DomEventHandler<HTMLDetailsElement> | undefined;
 };
 
-export type HTMLDetailsElementProps = MintHTMLElementProps<HTMLDetailsElement> &
-  HTMLDetailsElementAttributes &
-  HTMLDetailsElementEvents;
+export type HTMLDetailsElementProps =
+  SmllrHTMLElementProps<HTMLDetailsElement> &
+    HTMLDetailsElementAttributes &
+    HTMLDetailsElementEvents;
 
 export type HTMLDialogElementAttributes = {
   open?: boolean | undefined;
@@ -605,7 +606,7 @@ export type HTMLDialogElementEvents = {
   onClose?: DomEventHandler<HTMLDialogElement> | undefined;
 };
 
-export type HTMLDialogElementProps = MintHTMLElementProps<HTMLDialogElement> &
+export type HTMLDialogElementProps = SmllrHTMLElementProps<HTMLDialogElement> &
   HTMLDialogElementAttributes &
   HTMLDialogElementEvents;
 
@@ -616,7 +617,7 @@ export type HTMLEmbedElementAttributes = {
   width?: number | string | undefined;
 };
 
-export type HTMLEmbedElementProps = MintHTMLElementProps<HTMLEmbedElement> &
+export type HTMLEmbedElementProps = SmllrHTMLElementProps<HTMLEmbedElement> &
   HTMLEmbedElementAttributes;
 
 export type HTMLFieldSetElementAttributes = {
@@ -626,7 +627,7 @@ export type HTMLFieldSetElementAttributes = {
 };
 
 export type HTMLFieldSetElementProps =
-  MintHTMLElementProps<HTMLFieldSetElement> & HTMLFieldSetElementAttributes;
+  SmllrHTMLElementProps<HTMLFieldSetElement> & HTMLFieldSetElementAttributes;
 
 export type HTMLFormElementAttributes = {
   acceptCharset?: string | undefined;
@@ -639,7 +640,7 @@ export type HTMLFormElementAttributes = {
   target?: string | undefined;
 };
 
-export type HTMLFormElementProps = MintHTMLElementProps<HTMLFormElement> &
+export type HTMLFormElementProps = SmllrHTMLElementProps<HTMLFormElement> &
   HTMLFormElementAttributes;
 
 export type HTMLIFrameElementAttributes = {
@@ -665,7 +666,7 @@ export type HTMLIFrameElementAttributes = {
   width?: number | string | undefined;
 };
 
-export type HTMLIFrameElementProps = MintHTMLElementProps<HTMLIFrameElement> &
+export type HTMLIFrameElementProps = SmllrHTMLElementProps<HTMLIFrameElement> &
   HTMLIFrameElementAttributes;
 
 export type HTMLImageElementAttributes = {
@@ -682,7 +683,7 @@ export type HTMLImageElementAttributes = {
   width?: number | string | undefined;
 };
 
-export type HTMLImageElementProps = MintHTMLElementProps<HTMLImageElement> &
+export type HTMLImageElementProps = SmllrHTMLElementProps<HTMLImageElement> &
   HTMLImageElementAttributes;
 
 export type HTMLInputTypeAttribute =
@@ -753,7 +754,7 @@ export type HTMLInputElementAttributes = {
   width?: number | string | undefined;
 };
 
-export type HTMLInputElementProps = MintHTMLElementProps<HTMLInputElement> &
+export type HTMLInputElementProps = SmllrHTMLElementProps<HTMLInputElement> &
   ReactiveProps<HTMLInputElementAttributes>;
 
 export type HTMLKeygenElementAttributes = {
@@ -765,7 +766,7 @@ export type HTMLKeygenElementAttributes = {
   name?: string | undefined;
 };
 
-export type HTMLKeygenElementProps = MintHTMLElementProps<HTMLElement> &
+export type HTMLKeygenElementProps = SmllrHTMLElementProps<HTMLElement> &
   HTMLKeygenElementAttributes;
 
 export type HTMLLabelElementAttributes = {
@@ -773,7 +774,7 @@ export type HTMLLabelElementAttributes = {
   htmlFor?: string | undefined;
 };
 
-export type HTMLLabelElementProps = MintHTMLElementProps<HTMLLabelElement> &
+export type HTMLLabelElementProps = SmllrHTMLElementProps<HTMLLabelElement> &
   HTMLLabelElementAttributes;
 
 export type HTMLLinkElementAttributes = {
@@ -792,7 +793,7 @@ export type HTMLLinkElementAttributes = {
   charSet?: string | undefined;
 };
 
-export type HTMLLinkElementProps = MintHTMLElementProps<HTMLLinkElement> &
+export type HTMLLinkElementProps = SmllrHTMLElementProps<HTMLLinkElement> &
   HTMLLinkElementAttributes;
 
 export type HTMLObjectElementAttributes = {
@@ -807,7 +808,7 @@ export type HTMLObjectElementAttributes = {
   wmode?: string | undefined;
 };
 
-export type HTMLObjectElementProps = MintHTMLElementProps<HTMLObjectElement> &
+export type HTMLObjectElementProps = SmllrHTMLElementProps<HTMLObjectElement> &
   HTMLObjectElementAttributes;
 
 export type HTMLOListElementAttributes = {
@@ -816,7 +817,7 @@ export type HTMLOListElementAttributes = {
   type?: "1" | "a" | "A" | "i" | "I" | undefined;
 };
 
-export type HTMLOListElementProps = MintHTMLElementProps<HTMLOListElement> &
+export type HTMLOListElementProps = SmllrHTMLElementProps<HTMLOListElement> &
   HTMLOListElementAttributes;
 
 export type HTMLOptionElementAttributes = {
@@ -826,7 +827,7 @@ export type HTMLOptionElementAttributes = {
   value?: string | ReadonlyArray<string> | number | undefined;
 };
 
-export type HTMLOptionElementProps = MintHTMLElementProps<HTMLOptionElement> &
+export type HTMLOptionElementProps = SmllrHTMLElementProps<HTMLOptionElement> &
   HTMLOptionElementAttributes;
 
 export type HTMLProgressElementAttributes = {
@@ -835,13 +836,13 @@ export type HTMLProgressElementAttributes = {
 };
 
 export type HTMLProgressElementProps =
-  MintHTMLElementProps<HTMLProgressElement> & HTMLProgressElementAttributes;
+  SmllrHTMLElementProps<HTMLProgressElement> & HTMLProgressElementAttributes;
 
 export type HTMLQuoteElementAttributes = {
   cite?: string | undefined;
 };
 
-export type HTMLQuoteElementProps = MintHTMLElementProps<HTMLQuoteElement> &
+export type HTMLQuoteElementProps = SmllrHTMLElementProps<HTMLQuoteElement> &
   HTMLQuoteElementAttributes;
 
 export type HTMLSelectElementAttributes = {
@@ -855,7 +856,7 @@ export type HTMLSelectElementAttributes = {
   value?: string | ReadonlyArray<string> | number | undefined;
 };
 
-export type HTMLSelectElementProps = MintHTMLElementProps<HTMLSelectElement> &
+export type HTMLSelectElementProps = SmllrHTMLElementProps<HTMLSelectElement> &
   HTMLSelectElementAttributes;
 
 export type HTMLSourceElementAttributes = {
@@ -868,7 +869,7 @@ export type HTMLSourceElementAttributes = {
   width?: number | string | undefined;
 };
 
-export type HTMLSourceElementProps = MintHTMLElementProps<HTMLSourceElement> &
+export type HTMLSourceElementProps = SmllrHTMLElementProps<HTMLSourceElement> &
   HTMLSourceElementAttributes;
 
 export type TableHTMLAttributes = {
@@ -883,7 +884,7 @@ export type TableHTMLAttributes = {
   width?: number | string | undefined;
 };
 
-export type HTMLTableElementProps = MintHTMLElementProps<HTMLTableElement> &
+export type HTMLTableElementProps = SmllrHTMLElementProps<HTMLTableElement> &
   TableHTMLAttributes;
 
 export type HTMLTableDataCellAttributes = {
@@ -896,7 +897,7 @@ export type HTMLTableDataCellAttributes = {
 };
 
 export type HTMLTableDataCellElementProps =
-  MintHTMLElementProps<HTMLTableCellElement> & HTMLTableDataCellAttributes;
+  SmllrHTMLElementProps<HTMLTableCellElement> & HTMLTableDataCellAttributes;
 
 export type HTMLTextAreaAttributes = {
   autoComplete?: string | undefined;
@@ -915,7 +916,7 @@ export type HTMLTextAreaAttributes = {
   wrap?: string | undefined;
 };
 
-export type HTMLTextAreaProps = MintHTMLElementProps<HTMLTextAreaElement> &
+export type HTMLTextAreaProps = SmllrHTMLElementProps<HTMLTextAreaElement> &
   HTMLTextAreaAttributes;
 
 export type HTMLTableHeaderCellElementAttributes = {
@@ -928,7 +929,7 @@ export type HTMLTableHeaderCellElementAttributes = {
 };
 
 export type HTMLTableHeaderCellElementProps =
-  MintHTMLElementProps<HTMLTableCellElement> &
+  SmllrHTMLElementProps<HTMLTableCellElement> &
     HTMLTableHeaderCellElementAttributes;
 
 export type HTMLVideElementAttributes = {
@@ -940,5 +941,5 @@ export type HTMLVideElementAttributes = {
   disableRemotePlayback?: boolean | undefined;
 };
 
-export type HTMLVideoElementProps = MintHTMLElementProps<HTMLVideoElement> &
+export type HTMLVideoElementProps = SmllrHTMLElementProps<HTMLVideoElement> &
   HTMLVideElementAttributes;

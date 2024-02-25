@@ -1,7 +1,7 @@
 import { App } from "../App";
-import { MINT_EL_BRAND, MINT_EL_TYPES, SVG_MAP } from "../constants";
+import { SMLLR_EL_BRAND, SMLLR_EL_TYPES, SVG_MAP } from "../constants";
 import { ValueEffect } from "../reactive";
-import { HTMLElementPropMap, MintElement, MintNode } from "../types";
+import { HTMLElementPropMap, SmllrElement, SmllrNode } from "../types";
 import {
   UPPERCASE_LETTER_G_REGX,
   getEventTypeFromPropKey,
@@ -9,7 +9,7 @@ import {
   isFunction,
 } from "../utils";
 
-export class HtmlElement implements MintElement {
+export class HtmlElement implements SmllrElement {
   constructor({
     tag,
     props,
@@ -17,24 +17,24 @@ export class HtmlElement implements MintElement {
   }: {
     tag: string;
     props: any;
-    nodes: MintNode[];
+    nodes: SmllrNode[];
   }) {
     this.tag = tag;
     this.props = props ?? {};
     this._nodes = nodes;
     this.isSvg = tag in SVG_MAP;
   }
-  _brand = MINT_EL_BRAND;
-  _type = MINT_EL_TYPES.html;
+  _brand = SMLLR_EL_BRAND;
+  _type = SMLLR_EL_TYPES.html;
   tag;
   props;
   _nodes;
-  children: MintElement[] = [];
+  children: SmllrElement[] = [];
   isSvg;
   _domNode: HTMLElement | SVGElement | undefined;
   app!: App;
   cssCls: string | undefined;
-  _parent!: MintElement;
+  _parent!: SmllrElement;
   _index!: number;
   _isInserted = false;
   _effs = new Set<ValueEffect<any>>();
@@ -250,7 +250,7 @@ export const ATTRIBUTE_ALIASES: Record<string, string> = {
 export const htm = <Tag extends keyof HTMLElementPropMap>(
   tag: Tag,
   props: HTMLElementPropMap[Tag] | null,
-  ...nodes: MintNode[]
+  ...nodes: SmllrNode[]
 ) => {
   return new HtmlElement({ tag, props, nodes });
 };

@@ -1,6 +1,6 @@
-# 🍃 mint
+# 🦕 smllr 
 
-[![npm version](https://badge.fury.io/js/mint.ts.svg)](https://www.npmjs.com/package/mint.ts)
+[![npm version](https://badge.fury.io/js/smllr.svg)](https://www.npmjs.com/package/smllr)
 
 Frontend framework
 

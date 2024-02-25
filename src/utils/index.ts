@@ -1,5 +1,5 @@
-import { MINT_EL_BRAND } from "../constants";
-import { MintElement, TextNode } from "../types";
+import { SMLLR_EL_BRAND } from "../constants";
+import { SmllrElement, TextNode } from "../types";
 
 export const UPPERCASE_LETTER_REGX = /[A-Z]/;
 export const UPPERCASE_LETTER_G_REGX = new RegExp(
@@ -18,24 +18,24 @@ export const getEventTypeFromPropKey = (propKey: string) =>
 export const isObject = (v: any): v is Record<string, any> =>
   v != null && typeof v === "object";
 
-export const isMintElement = (v: any): v is MintElement => {
-  return isObject(v) && v._brand === MINT_EL_BRAND;
+export const isSmllrElement = (v: any): v is SmllrElement => {
+  return isObject(v) && v._brand === SMLLR_EL_BRAND;
 };
 
 export const isTextNode = (v: any): v is TextNode =>
   typeof v === "string" || typeof v === "number";
 
 export const findAncestorElement = (
-  startEl: MintElement,
-  condition: (current: MintElement) => boolean
-): MintElement | undefined => {
+  startEl: SmllrElement,
+  condition: (current: SmllrElement) => boolean
+): SmllrElement | undefined => {
   let current = startEl;
 
   while (current && !condition(current)) {
     current = current._parent;
   }
 
-  return current as MintElement;
+  return current as SmllrElement;
 };
 
 export * from "./isElementOfType";

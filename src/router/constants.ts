@@ -1,1 +1,1 @@
-export const ROUTER_CTX = "__mint-router-ctx";
+export const ROUTER_CTX = "__smllr-router-ctx";

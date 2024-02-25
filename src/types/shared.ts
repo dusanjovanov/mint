@@ -2,7 +2,7 @@ import * as CSS from "csstype";
 import { HtmlElement } from "../html";
 import { CSSObject } from "./css";
 import { DomEventProps } from "./events";
-import { MintNode } from "./nodes";
+import { SmllrNode } from "./nodes";
 
 export type CSSProperties = CSS.Properties<string | number>;
 
@@ -10,9 +10,9 @@ export type Booleanish = boolean | "true" | "false";
 
 export type CrossOrigin = "anonymous" | "use-credentials" | "" | undefined;
 
-export type MintDomProps<T extends HTMLElement | SVGElement> = {
+export type SmllrDomProps<T extends HTMLElement | SVGElement> = {
   css?: CSSObject | (() => CSSObject);
-  node?: MintNode;
+  node?: SmllrNode;
   data?: Record<string, any>;
   use?: (el: HtmlElement) => (() => void) | void;
 } & DomEventProps<T>;

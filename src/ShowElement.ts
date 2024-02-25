@@ -1,33 +1,33 @@
 import { App } from "./App";
-import { MINT_EL_BRAND, MINT_EL_TYPES } from "./constants";
+import { SMLLR_EL_BRAND, SMLLR_EL_TYPES } from "./constants";
 import { ValueEffect } from "./reactive";
-import { DomNode, MintElement, MintNode } from "./types";
+import { DomNode, SmllrElement, SmllrNode } from "./types";
 
-export class ShowElement implements MintElement {
+export class ShowElement implements SmllrElement {
   constructor({
     when,
     then,
     otherwise,
   }: {
     when: () => boolean;
-    then: MintNode;
-    otherwise: MintNode;
+    then: SmllrNode;
+    otherwise: SmllrNode;
   }) {
     this.when = when;
     this.thenNodes = then;
     this.otherwiseNodes = otherwise;
   }
-  _brand = MINT_EL_BRAND;
-  _type = MINT_EL_TYPES.show;
+  _brand = SMLLR_EL_BRAND;
+  _type = SMLLR_EL_TYPES.show;
   app!: App;
   when;
   thenNodes;
   otherwiseNodes;
-  children: MintElement[] = [];
+  children: SmllrElement[] = [];
   prevCondition: boolean | undefined;
-  thenEls: MintElement[] = [];
-  otherwiseEls: MintElement[] = [];
-  _parent!: MintElement;
+  thenEls: SmllrElement[] = [];
+  otherwiseEls: SmllrElement[] = [];
+  _parent!: SmllrElement;
   _index!: number;
   _isInserted = false;
   _eff: ValueEffect<any> | undefined;
@@ -120,6 +120,6 @@ export class ShowElement implements MintElement {
 
 export const show = (
   when: () => boolean,
-  then: MintNode,
-  otherwise?: MintNode
+  then: SmllrNode,
+  otherwise?: SmllrNode
 ) => new ShowElement({ when, then, otherwise });

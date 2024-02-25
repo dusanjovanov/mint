@@ -1,10 +1,10 @@
 import { App } from "../App";
-import { MINT_EL_BRAND, MINT_EL_TYPES } from "../constants";
+import { SMLLR_EL_BRAND, SMLLR_EL_TYPES } from "../constants";
 import { Computed, ValueEffect } from "../reactive";
-import { MintElement, MintNode } from "../types";
+import { SmllrElement, SmllrNode } from "../types";
 import { ListItem } from "./ListItem";
 
-export class ListElement<Item> implements MintElement {
+export class ListElement<Item> implements SmllrElement {
   constructor({
     getArr,
     renderItem,
@@ -19,10 +19,10 @@ export class ListElement<Item> implements MintElement {
     this._getItemKey = getItemKey;
   }
 
-  _brand = MINT_EL_BRAND;
-  _type = MINT_EL_TYPES.list;
-  children: MintElement[] = [];
-  _parent!: MintElement;
+  _brand = SMLLR_EL_BRAND;
+  _type = SMLLR_EL_TYPES.list;
+  children: SmllrElement[] = [];
+  _parent!: SmllrElement;
   _index!: number;
   app!: App;
   _isInserted = false;
@@ -99,9 +99,9 @@ export class ListElement<Item> implements MintElement {
     else {
       const newCache: Cache<Item> = new Map();
 
-      const toInsert: MintElement[] = [];
-      const toRemove: MintElement[] = [];
-      const toMove: MintElement[] = [];
+      const toInsert: SmllrElement[] = [];
+      const toRemove: SmllrElement[] = [];
+      const toMove: SmllrElement[] = [];
 
       this.children.length = 0;
 
@@ -175,7 +175,7 @@ export class ListElement<Item> implements MintElement {
 
 type Cache<Item> = Map<CacheKey<Item>, ListItem<Item>>;
 
-type RenderItemFn<Item> = (item: Item, index: Computed<number>) => MintNode;
+type RenderItemFn<Item> = (item: Item, index: Computed<number>) => SmllrNode;
 
 type CacheKey<Item> = string | number | Item;
 

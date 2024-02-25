@@ -1,13 +1,13 @@
 import { cmp } from "../component";
 import { htm } from "../html";
-import { HTMLAnchorElementProps, MintNode } from "../types";
+import { HTMLAnchorElementProps, SmllrNode } from "../types";
 import { isFunction } from "../utils";
 import { Router } from "./Router";
 import { ROUTER_CTX } from "./constants";
 import { NavigateOptions } from "./types";
 
 export type LinkProps = {
-  node: MintNode;
+  node: SmllrNode;
   path: string | (() => string);
 } & NavigateOptions &
   HTMLAnchorElementProps;

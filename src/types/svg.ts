@@ -1,5 +1,5 @@
 import { AriaRole } from "./aria";
-import { Booleanish, CSSProperties, CrossOrigin, MintDomProps } from "./shared";
+import { Booleanish, CSSProperties, CrossOrigin, SmllrDomProps } from "./shared";
 
 export type SVGElementPropMap = {
   svg: SVGProps<SVGSVGElement>;
@@ -62,7 +62,7 @@ export type SVGElementPropMap = {
   view: SVGProps<SVGViewElement>;
 };
 
-export type SVGProps<T extends SVGElement> = MintDomProps<T> & SVGAttributes;
+export type SVGProps<T extends SVGElement> = SmllrDomProps<T> & SVGAttributes;
 
 export type SVGAttributes = {
   // React-specific Attributes

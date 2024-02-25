@@ -1,12 +1,12 @@
 import { show } from "../ShowElement";
 import { cmp } from "../component";
-import { MintNode } from "../types";
+import { SmllrNode } from "../types";
 import { Router } from "./Router";
 import { ROUTER_CTX } from "./constants";
 
 type RouteProps = {
   key: string;
-  node: MintNode;
+  node: SmllrNode;
 };
 
 export const Route = cmp<RouteProps>(($) => {

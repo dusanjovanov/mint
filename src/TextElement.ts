@@ -1,18 +1,18 @@
 import { App } from "./App";
-import { MINT_EL_BRAND, MINT_EL_TYPES } from "./constants";
+import { SMLLR_EL_BRAND, SMLLR_EL_TYPES } from "./constants";
 import { ValueEffect } from "./reactive";
-import { DomNode, MintElement, TextNode } from "./types";
+import { DomNode, SmllrElement, TextNode } from "./types";
 import { isFunction } from "./utils";
 
-export class TextElement implements MintElement {
+export class TextElement implements SmllrElement {
   constructor({ text }: { text: TextNode | (() => TextNode) }) {
     this.text = text;
   }
-  _brand = MINT_EL_BRAND;
-  _type = MINT_EL_TYPES.text;
+  _brand = SMLLR_EL_BRAND;
+  _type = SMLLR_EL_TYPES.text;
   text;
   app!: App;
-  _parent!: MintElement;
+  _parent!: SmllrElement;
   _index!: number;
   _isInserted = false;
   _eff: ValueEffect<any> | undefined;

@@ -3,12 +3,12 @@ import { Css } from "./css";
 import { HtmlElement } from "./html";
 import { ReactiveContext } from "./reactive";
 import { Router, RouterOptions, RouterProvider } from "./router";
-import { DomNode, MintElement, MintNode } from "./types";
+import { DomNode, SmllrElement, SmllrNode } from "./types";
 import {
   findAncestorElement,
   isElementOfType,
   isFunction,
-  isMintElement,
+  isSmllrElement,
   isTextNode,
 } from "./utils";
 
@@ -29,20 +29,20 @@ export class App {
     parent,
     startIndex = 0,
   }: {
-    node: MintNode;
-    parent: MintElement;
+    node: SmllrNode;
+    parent: SmllrElement;
     startIndex?: number;
   }) {
     const flatNodes = Array.isArray(node) ? node.flat(Infinity as 1) : [node];
 
-    const els: MintElement[] = [];
+    const els: SmllrElement[] = [];
 
     const len = flatNodes.length;
 
     for (let i = 0; i < len; i++) {
       const node = flatNodes[i];
 
-      let el!: MintElement;
+      let el!: SmllrElement;
 
       if (isTextNode(node)) {
         el = new TextElement({ text: node });
@@ -52,7 +52,7 @@ export class App {
         el = new TextElement({ text: node });
       }
       //
-      else if (isMintElement(node)) {
+      else if (isSmllrElement(node)) {
         el = node;
       }
 
@@ -67,7 +67,7 @@ export class App {
     return els;
   }
 
-  getFirstNode(els: MintElement[]): DomNode | undefined {
+  getFirstNode(els: SmllrElement[]): DomNode | undefined {
     for (const el of els) {
       const node = el._getFirstNode();
       if (node) return node;
@@ -75,8 +75,8 @@ export class App {
   }
 
   findNextNode(
-    el: MintElement,
-    htmlAncestor: MintElement
+    el: SmllrElement,
+    htmlAncestor: SmllrElement
   ): DomNode | undefined {
     let nextEl = getNextEl(el);
 
@@ -95,11 +95,11 @@ export class App {
     }
   }
 
-  getNodes(els: MintElement[]) {
+  getNodes(els: SmllrElement[]) {
     return els.map((el) => el._getNodes()).flat(Infinity) as DomNode[];
   }
 
-  insert(els: MintElement[]) {
+  insert(els: SmllrElement[]) {
     for (const el of els) {
       const htmlAncestor = findAncestorElement(el._parent, (current) =>
         isElementOfType(current, "html")
@@ -117,15 +117,15 @@ export class App {
     this.onInsert(els);
   }
 
-  onInsert(els: MintElement[]) {
+  onInsert(els: SmllrElement[]) {
     els.forEach((el) => el._onInsert());
   }
 
-  remove(els: MintElement[]) {
+  remove(els: SmllrElement[]) {
     els.forEach((el) => el._remove());
   }
 
-  _toDom(els: MintElement[]) {
+  _toDom(els: SmllrElement[]) {
     const nodes: DomNode[] = [];
 
     for (const el of els) {
@@ -145,12 +145,12 @@ export class App {
     return nodes;
   }
 
-  _toString(els: MintElement[]) {
+  _toString(els: SmllrElement[]) {
     return els.map((el) => el._toHtml()).join("");
   }
 
   /** Creates DOM elements from node and inserts them into the container. */
-  render(node: MintNode, container: HTMLElement) {
+  render(node: SmllrNode, container: HTMLElement) {
     const containerEl = new HtmlElement({
       tag: container.tagName.toLowerCase(),
       props: {},
@@ -172,11 +172,11 @@ export class App {
   }
 
   /** Creates an HTML string from node and returns it. */
-  ssr(node: MintNode) {
-    const els = this.createElements({ node, parent: {} as MintElement });
+  ssr(node: SmllrNode) {
+    const els = this.createElements({ node, parent: {} as SmllrElement });
 
     return this._toString(els);
   }
 }
 
-const getNextEl = (el: MintElement) => el._parent?.children?.[el._index + 1];
+const getNextEl = (el: SmllrElement) => el._parent?.children?.[el._index + 1];
