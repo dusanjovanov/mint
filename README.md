@@ -7,14 +7,14 @@ Frontend framework
 > Work in progress - not ready for production 🚧
 
 ```ts
-const Counter = component(($) => {
+const Counter = cmp(($) => {
   const count = $.state(0);
   const doubleCount = $.computed(() => count.value * 2);
 
   return [
-    h.div({ node: ["Count is: ", count] }),
-    h.div({ node: ["Double count is: ", doubleCount] }),
-    h.button({ onClick: () => count.value++ }),
+    htm("div", null, "Count is: ", count),
+    htm("div", null, "Double count is: ", doubleCount),
+    htm("button", ({ onClick: () => count.value++ }, "+"),
   ];
 });
 ```
