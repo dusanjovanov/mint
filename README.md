@@ -14,7 +14,15 @@ const Counter = cmp(($) => {
   return [
     htm("div", null, "Count is: ", () => count.value),
     htm("div", null, "Double count is: ", () => doubleCount.value),
-    htm("button", ({ onClick: () => count.value++ }, "+"),
+    htm(
+      "button",
+      {
+        onClick: () => {
+          count.value++;
+        },
+      },
+      "+"
+    ),
   ];
 });
 ```
