@@ -1,7 +1,12 @@
 import { App } from "../App";
 import { SMLLR_EL_BRAND, SMLLR_EL_TYPES, SVG_MAP } from "../constants";
 import { ValueEffect } from "../reactive";
-import { HTMLElementPropMap, SmllrElement, SmllrNode } from "../types";
+import {
+  HTMLElementPropMap,
+  SVGElementPropMap,
+  SmllrElement,
+  SmllrNode,
+} from "../types";
 import {
   UPPERCASE_LETTER_G_REGX,
   getEventTypeFromPropKey,
@@ -247,9 +252,11 @@ export const ATTRIBUTE_ALIASES: Record<string, string> = {
   htmlFor: "for",
 };
 
-export const htm = <Tag extends keyof HTMLElementPropMap>(
+type AllMap = HTMLElementPropMap & SVGElementPropMap;
+
+export const htm = <Tag extends keyof AllMap>(
   tag: Tag,
-  props: HTMLElementPropMap[Tag] | null,
+  props: AllMap[Tag] | null,
   ...nodes: SmllrNode[]
 ) => {
   return new HtmlElement({ tag, props, nodes });
