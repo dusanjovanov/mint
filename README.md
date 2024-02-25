@@ -12,8 +12,8 @@ const Counter = cmp(($) => {
   const doubleCount = $.computed(() => count.value * 2);
 
   return [
-    htm("div", null, "Count is: ", count),
-    htm("div", null, "Double count is: ", doubleCount),
+    htm("div", null, "Count is: ", () => count.value),
+    htm("div", null, "Double count is: ", () => doubleCount.value),
     htm("button", ({ onClick: () => count.value++ }, "+"),
   ];
 });
