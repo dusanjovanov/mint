@@ -109,10 +109,7 @@ export class HtmlElement implements SmllrElement {
     }
     //
     else {
-      this._domNode.setAttribute(
-        ATTRIBUTE_ALIASES[key] ?? key,
-        this.props[key]
-      );
+      this._domNode.setAttribute(ATTRIBUTE_ALIASES[key] ?? key, value);
     }
   }
 

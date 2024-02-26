@@ -65,12 +65,17 @@ export class ComponentElement<Props> implements SmllrElement {
   }
 }
 
+type PropsWithNodes<Props> = Props & { nodes: SmllrNode[] };
+
 export const cmp =
-  <Props = void>(render: ComponentRenderFn<Props>) =>
-  (props: Props) => {
+  <Props = void | null>(render: ComponentRenderFn<PropsWithNodes<Props>>) =>
+  (props: Props, ...nodes: SmllrNode[]) => {
     return new ComponentElement({
       render,
-      props,
+      props: {
+        ...props,
+        nodes,
+      },
     });
   };
 

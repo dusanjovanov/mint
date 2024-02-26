@@ -1,7 +1,7 @@
 {
   "name": "smllr",
-  "version": "0.0.2",
-  "description": "",
+  "version": "0.0.3",
+  "description": "Frontend framework",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
@@ -25,7 +25,9 @@
   },
   "keywords": [
     "frontend",
-    "ui"
+    "ui",
+    "router",
+    "css-in-js"
   ],
   "author": "Dusan Jovanov",
   "license": "MIT",

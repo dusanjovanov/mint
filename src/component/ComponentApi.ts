@@ -2,7 +2,7 @@ import { Computed, Dep, Effect, State } from "../reactive";
 import { findAncestorElement, isElementOfType } from "../utils";
 import { ComponentElement } from "./ComponentElement";
 
-export class ComponentApi<Props> {
+export class ComponentApi<Props = any> {
   constructor(el: ComponentElement<Props>) {
     this._el = el;
   }
