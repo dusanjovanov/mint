@@ -38,5 +38,6 @@ export const findAncestorElement = (
   return current as SmllrElement;
 };
 
+export * from "./getPropValue";
 export * from "./isElementOfType";
 export * from "./isFunction";

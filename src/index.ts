@@ -7,3 +7,4 @@ export * from "./list";
 export * from "./reactive";
 export * from "./router";
 export * from "./types";
+export { getPropValue } from "./utils";
