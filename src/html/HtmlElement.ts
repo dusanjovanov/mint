@@ -1,18 +1,14 @@
 import { App } from "../App";
 import { SMLLR_EL_BRAND, SMLLR_EL_TYPES, SVG_MAP } from "../constants";
 import { ValueEffect } from "../reactive";
-import {
-  HTMLElementPropMap,
-  SVGElementPropMap,
-  SmllrElement,
-  SmllrNode,
-} from "../types";
+import { SmllrElement, SmllrNode } from "../types";
 import {
   UPPERCASE_LETTER_G_REGX,
   getEventTypeFromPropKey,
   isEventProp,
   isFunction,
 } from "../utils";
+import { AllHtmlPropMap, AllHtmlTags } from "./types";
 
 export class HtmlElement implements SmllrElement {
   constructor({
@@ -249,11 +245,9 @@ export const ATTRIBUTE_ALIASES: Record<string, string> = {
   htmlFor: "for",
 };
 
-type AllMap = HTMLElementPropMap & SVGElementPropMap;
-
-export const htm = <Tag extends keyof AllMap>(
+export const htm = <Tag extends AllHtmlTags>(
   tag: Tag,
-  props: AllMap[Tag] | null,
+  props: AllHtmlPropMap[Tag] | null,
   ...nodes: SmllrNode[]
 ) => {
   return new HtmlElement({ tag, props, nodes });

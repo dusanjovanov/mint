@@ -1,6 +1,6 @@
 {
   "name": "smllr",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Frontend framework",
   "type": "module",
   "main": "dist/index.cjs",
@@ -37,8 +37,5 @@
     "tsup": "^7.1.0",
     "typescript": "^5.1.6",
     "vitest": "^0.34.2"
-  },
-  "dependencies": {
-    "fast-array-diff": "^1.1.0"
   }
 }

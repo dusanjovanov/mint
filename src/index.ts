@@ -2,6 +2,7 @@ export * from "./App";
 export * from "./ShowElement";
 export * from "./TextElement";
 export * from "./component";
+export { styled } from "./css";
 export * from "./html";
 export * from "./list";
 export * from "./reactive";
