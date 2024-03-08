@@ -1,6 +1,6 @@
 {
   "name": "smllr",
-  "version": "0.0.4",
+  "version": "0.0.10",
   "description": "Frontend framework",
   "type": "module",
   "main": "dist/index.cjs",
@@ -31,8 +31,10 @@
   ],
   "author": "Dusan Jovanov",
   "license": "MIT",
+  "dependencies": {
+    "csstype": "^3.1.2"
+  },
   "devDependencies": {
-    "csstype": "^3.1.2",
     "prettier": "2.8",
     "tsup": "^7.1.0",
     "typescript": "^5.1.6",

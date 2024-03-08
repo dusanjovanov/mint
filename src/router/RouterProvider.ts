@@ -8,10 +8,10 @@ type RouterProviderProps = {
   node: SmllrNode;
 };
 
-export const RouterProvider = cmp<RouterProviderProps>(($) => {
-  const { router, node } = $.props;
+export const RouterProvider = cmp<RouterProviderProps>(
+  ($, { router, node }) => {
+    $.setContext(ROUTER_CTX, router);
 
-  $.setContext(ROUTER_CTX, router);
-
-  return node;
-});
+    return node;
+  }
+);

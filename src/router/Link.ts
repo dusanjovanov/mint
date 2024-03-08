@@ -12,22 +12,22 @@ export type LinkProps = {
 } & NavigateOptions &
   HTMLAnchorElementProps;
 
-export const Link = cmp<LinkProps>(($) => {
-  const { node, path, replace, state, ...anchorProps } = $.props;
+export const Link = cmp<LinkProps>(
+  ($, { node, path, replace, state, ...anchorProps }) => {
+    const router = $.getContext<Router>(ROUTER_CTX);
 
-  const router = $.getContext<Router>(ROUTER_CTX);
-
-  return htm(
-    "a",
-    {
-      ...anchorProps,
-      href: path,
-      onClick: (e) => {
-        e.preventDefault();
-        router.navigate(isFunction(path) ? path() : path, { replace, state });
-        anchorProps.onClick?.(e);
+    return htm(
+      "a",
+      {
+        ...anchorProps,
+        href: path,
+        onClick: (e) => {
+          e.preventDefault();
+          router.navigate(isFunction(path) ? path() : path, { replace, state });
+          anchorProps.onClick?.(e);
+        },
       },
-    },
-    node
-  );
-});
+      node
+    );
+  }
+);

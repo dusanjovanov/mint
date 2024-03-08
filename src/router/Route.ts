@@ -9,9 +9,7 @@ type RouteProps = {
   node: SmllrNode;
 };
 
-export const Route = cmp<RouteProps>(($) => {
-  const { key, node } = $.props;
-
+export const Route = cmp<RouteProps>(($, { key, node }) => {
   const router = $.getContext<Router>(ROUTER_CTX);
 
   return show(() => {

@@ -4,8 +4,8 @@ import {
   Booleanish,
   CSSProperties,
   CrossOrigin,
-  SmllrDomProps,
   ReactiveProps,
+  SmllrDomProps,
 } from "./shared";
 
 export type SmllrHTMLElementProps<T extends HTMLElement> =
@@ -917,7 +917,7 @@ export type HTMLTextAreaAttributes = {
 };
 
 export type HTMLTextAreaProps = SmllrHTMLElementProps<HTMLTextAreaElement> &
-  HTMLTextAreaAttributes;
+  ReactiveProps<HTMLTextAreaAttributes>;
 
 export type HTMLTableHeaderCellElementAttributes = {
   align?: "left" | "center" | "right" | "justify" | "char" | undefined;

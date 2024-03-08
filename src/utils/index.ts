@@ -1,11 +1,5 @@
-import { SMLLR_EL_BRAND } from "../constants";
-import { SmllrElement, TextNode } from "../types";
-
-export const UPPERCASE_LETTER_REGX = /[A-Z]/;
-export const UPPERCASE_LETTER_G_REGX = new RegExp(
-  UPPERCASE_LETTER_REGX,
-  UPPERCASE_LETTER_REGX.flags + "g"
-);
+import { SMLLR_EL_BRAND, UPPERCASE_LETTER_REGX } from "../constants";
+import { CSSObject, SmllrElement, TextNode } from "../types";
 
 export const isEventProp = (propKey: string) =>
   propKey !== "on" &&
@@ -25,19 +19,13 @@ export const isSmllrElement = (v: any): v is SmllrElement => {
 export const isTextNode = (v: any): v is TextNode =>
   typeof v === "string" || typeof v === "number";
 
-export const findAncestorElement = (
-  startEl: SmllrElement,
-  condition: (current: SmllrElement) => boolean
-): SmllrElement | undefined => {
-  let current = startEl;
+export const css = (css: CSSObject) => css;
 
-  while (current && !condition(current)) {
-    current = current._parent;
-  }
-
-  return current as SmllrElement;
-};
-
+export * from "./camelToKebab";
+export * from "./cva";
+export * from "./entries";
+export * from "./findAncestorElement";
 export * from "./getPropValue";
 export * from "./isElementOfType";
 export * from "./isFunction";
+export * from "./simpleCtx";

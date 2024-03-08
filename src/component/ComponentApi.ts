@@ -23,27 +23,19 @@ export class ComponentApi<Props = any> {
     this._el._subs.add(eff);
   }
 
-  setContext<Value>(key: string, value: Value) {
-    this._el._context[key] = value;
+  setContext<Value>(key: any, value: Value) {
+    this._el._context.set(key, value);
   }
 
-  getContext<Value>(key: string) {
-    if (key in this._el._context) {
-      return this._el._context[key] as Value;
+  getContext<Value>(key: any) {
+    if (this._el._context.has(key)) {
+      return this._el._context.get(key) as Value;
     }
     const compnentElWithContext = findAncestorElement(
       this._el,
-      (current) => isElementOfType(current, "cmp") && key in current._context
+      (current) => isElementOfType(current, "cmp") && current._context.has(key)
     ) as ComponentElement<any>;
 
-    if (!compnentElWithContext) {
-      throw new Error(`No context with key "${key}" has been set.`);
-    }
-
-    return compnentElWithContext._context[key] as Value;
-  }
-
-  get props() {
-    return this._el._props;
+    return compnentElWithContext._context.get(key) as Value;
   }
 }

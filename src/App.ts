@@ -1,5 +1,5 @@
 import { TextElement } from "./TextElement";
-import { Css } from "./css";
+import { Css, CssOptions } from "./css";
 import { HtmlElement } from "./html";
 import { ReactiveContext } from "./reactive";
 import { Router, RouterOptions, RouterProvider } from "./router";
@@ -14,13 +14,15 @@ import {
 
 type AppOptions = {
   router?: RouterOptions;
+  css?: CssOptions;
 };
 
 export class App {
   constructor(options?: AppOptions) {
     this.router = new Router(options?.router ?? { routes: [] }, this);
+    this.css = new Css(options?.css);
   }
-  css = new Css();
+  css;
   ctx = new ReactiveContext();
   router;
 

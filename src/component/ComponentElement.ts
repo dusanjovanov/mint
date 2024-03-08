@@ -26,7 +26,7 @@ export class ComponentElement<Props> implements SmllrElement {
   _render;
   _props;
   _subs = new Set<Sub>();
-  _context: Record<string, any> = {};
+  _context = new Map<any, any>();
 
   _getNodes(): Node[] {
     return this.app.getNodes(this.children);
@@ -50,7 +50,7 @@ export class ComponentElement<Props> implements SmllrElement {
   }
 
   _create() {
-    const smllrNode = this._render(new ComponentApi(this));
+    const smllrNode = this._render(new ComponentApi(this), this._props);
     this.children = this.app.createElements({ node: smllrNode, parent: this });
   }
 
@@ -79,4 +79,7 @@ export const cmp =
     });
   };
 
-type ComponentRenderFn<Props> = ($: ComponentApi<Props>) => SmllrNode;
+type ComponentRenderFn<Props> = (
+  $: ComponentApi<Props>,
+  props: Props
+) => SmllrNode;

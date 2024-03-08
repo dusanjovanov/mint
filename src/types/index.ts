@@ -4,5 +4,6 @@ export * from "./html";
 export * from "./nodes";
 export * from "./shared";
 export * from "./svg";
+export * from "./utils";
 
 export type DomNode = Node;

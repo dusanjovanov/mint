@@ -1,9 +1,11 @@
 import { App } from "../App";
 import { SMLLR_EL_BRAND, SMLLR_EL_TYPES, SVG_MAP } from "../constants";
+import { handleNumberCssValue } from "../css";
 import { ValueEffect } from "../reactive";
-import { SmllrElement, SmllrNode } from "../types";
+import { DataSet, SmllrElement, SmllrNode } from "../types";
 import {
-  UPPERCASE_LETTER_G_REGX,
+  camelToKebab,
+  entries,
   getEventTypeFromPropKey,
   isEventProp,
   isFunction,
@@ -39,6 +41,8 @@ export class HtmlElement implements SmllrElement {
   _index!: number;
   _isInserted = false;
   _effs = new Set<ValueEffect<any>>();
+  _prevData: DataSet | undefined;
+  _prevStyle: any;
 
   get node() {
     return this._domNode!;
@@ -94,9 +98,7 @@ export class HtmlElement implements SmllrElement {
     }
     //
     else if (key === "data") {
-      Object.keys(value).forEach((dataKey) => {
-        this._domNode!.dataset[dataKey] = value[dataKey];
-      });
+      this.setDataAttr(value);
     }
     //
     else if (PROP_MAP[key]) {
@@ -109,17 +111,40 @@ export class HtmlElement implements SmllrElement {
     }
   }
 
-  setStyle(styleObj: any) {
-    if (!this._domNode) return;
-    for (const key of Object.keys(styleObj)) {
-      let v = styleObj[key];
-
-      if (typeof v === "number") {
-        v = `${v}px`;
-      }
-
-      this._domNode.style[key as any] = v;
+  setDataAttr(dataSet: DataSet) {
+    // remove no longer present keys
+    if (this._prevData) {
+      Object.keys(this._prevData).forEach((key) => {
+        if (!(key in dataSet)) {
+          delete this._domNode!.dataset[key];
+        }
+      });
     }
+    this._prevData = dataSet;
+    // current keys
+    entries(dataSet).forEach(([key, value]) => {
+      if (value != null) {
+        this._domNode!.dataset[key] = value;
+      } else {
+        delete this._domNode!.dataset[key];
+      }
+    });
+  }
+
+  setStyle(styleObj: any) {
+    // remove no longer present keys
+    if (this._prevStyle) {
+      Object.keys(this._prevStyle).forEach((key) => {
+        if (!(key in styleObj)) {
+          this._domNode!.style[key as any] = "";
+        }
+      });
+    }
+    this._prevStyle = styleObj;
+    // current keys
+    entries(styleObj).forEach(([key, value]) => {
+      this._domNode!.style[key as any] = handleNumberCssValue(key, value);
+    });
   }
 
   _toDom() {
@@ -132,8 +157,8 @@ export class HtmlElement implements SmllrElement {
 
     dom.append(...this.app._toDom(this.children));
 
-    Object.keys(this.props).forEach((key) => {
-      let value = this.props[key];
+    entries(this.props).forEach(([key, value]) => {
+      let v = this.props[key];
 
       if (!isEventProp(key) && key !== "use" && isFunction(value)) {
         const eff = new ValueEffect(
@@ -144,10 +169,10 @@ export class HtmlElement implements SmllrElement {
           this.app.ctx
         );
         this._effs.add(eff);
-        value = eff.value;
+        v = eff.value;
       }
 
-      this.setProp(key, value);
+      this.setProp(key, v);
     });
 
     return dom;
@@ -168,16 +193,11 @@ export class HtmlElement implements SmllrElement {
     for (const key of keys) {
       let v = obj[key];
 
-      const k = key.replace(
-        UPPERCASE_LETTER_G_REGX,
-        (match) => `-${match.toLowerCase()}`
-      );
-
-      if (typeof v === "number") {
-        v = `${v}px`;
+      if (v == null) {
+        continue;
       }
 
-      s += `${k}:${v};`;
+      s += `${camelToKebab(key)}:${handleNumberCssValue(key, v)};`;
     }
     return s;
   }

@@ -13,10 +13,12 @@ export type CrossOrigin = "anonymous" | "use-credentials" | "" | undefined;
 export type SmllrDomProps<T extends HTMLElement | SVGElement> = {
   css?: CSSObject | (() => CSSObject);
   node?: SmllrNode;
-  data?: Record<string, any>;
+  data?: DataSet;
   use?: (el: HtmlElement) => (() => void) | void;
 } & DomEventProps<T>;
 
 export type ReactiveProps<T> = {
   [key in keyof T]: T[key] | (() => T[key]);
 };
+
+export type DataSet = Record<string, any>;

@@ -10,10 +10,10 @@ type CSSObjectBase = {
 
 type CSSArrayValue = ReadonlyArray<CSSValue>;
 
-type CssValue = string | number | CSSObject | CSSArrayValue;
+type CSSValue = string | number | CSSObject | undefined | CSSArrayValue;
 
 type CSSOthersObject = {
-  [name: string]: CssValue;
+  [name: string]: CSSValue;
 };
 
 export type CSSObject = CSSObjectBase & CSSPseudos & CSSOthersObject;

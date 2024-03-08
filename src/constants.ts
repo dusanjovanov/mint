@@ -75,3 +75,44 @@ export const SMLLR_EL_TYPES = {
   cmp: Symbol.for("smllr-cmp"),
   list: Symbol.for("smllr-list"),
 };
+
+const UNITLESS_CSS_PROPS = [
+  "animationIterationCount",
+  "boxFlex",
+  "boxFlexGroup",
+  "boxOrdinalGroup",
+  "columnCount",
+  "fillOpacity",
+  "flex",
+  "flexGrow",
+  "flexPositive",
+  "flexShrink",
+  "flexNegative",
+  "flexOrder",
+  "fontWeight",
+  "lineClamp",
+  "lineHeight",
+  "opacity",
+  "order",
+  "orphans",
+  "stopOpacity",
+  "strokeDashoffset",
+  "strokeOpacity",
+  "strokeWidth",
+  "tabSize",
+  "widows",
+  "zIndex",
+  "zoom",
+] as const;
+
+export const UNITLESS_CSS_PROP_MAP = UNITLESS_CSS_PROPS.reduce((m, t) => {
+  m[t] = true;
+  return m;
+}, {} as Record<string, boolean>);
+
+export const UPPERCASE_LETTER_REGX = /[A-Z]/;
+export const UPPERCASE_LETTER_G_REGX = new RegExp(
+  UPPERCASE_LETTER_REGX,
+  UPPERCASE_LETTER_REGX.flags + "g"
+);
+export const THEME_TOKEN_REGEX = /\$[A-Za-z0-9_]+/g;
