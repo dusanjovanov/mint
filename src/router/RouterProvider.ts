@@ -1,7 +1,7 @@
+import { simpleCtx } from "..";
 import { cmp } from "../component";
 import { SmllrNode } from "../types";
 import { Router } from "./Router";
-import { ROUTER_CTX } from "./constants";
 
 type RouterProviderProps = {
   router: Router;
@@ -10,8 +10,12 @@ type RouterProviderProps = {
 
 export const RouterProvider = cmp<RouterProviderProps>(
   ($, { router, node }) => {
-    $.setContext(ROUTER_CTX, router);
+    setRouterContext($, router);
 
     return node;
   }
+);
+
+export const [getRouterContext, setRouterContext] = simpleCtx(
+  (router: Router) => router
 );

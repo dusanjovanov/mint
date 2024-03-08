@@ -1,20 +1,19 @@
 import { cmp } from "../component";
 import { htm } from "../html";
-import { HTMLAnchorElementProps, SmllrNode } from "../types";
-import { isFunction } from "../utils";
-import { Router } from "./Router";
-import { ROUTER_CTX } from "./constants";
+import { HTMLAnchorElementProps, ReactiveProp, SmllrNode } from "../types";
+import { getPropValue } from "../utils";
+import { getRouterContext } from "./RouterProvider";
 import { NavigateOptions } from "./types";
 
 export type LinkProps = {
   node: SmllrNode;
-  path: string | (() => string);
+  path: ReactiveProp<string>;
 } & NavigateOptions &
   HTMLAnchorElementProps;
 
 export const Link = cmp<LinkProps>(
   ($, { node, path, replace, state, ...anchorProps }) => {
-    const router = $.getContext<Router>(ROUTER_CTX);
+    const router = getRouterContext($);
 
     return htm(
       "a",
@@ -23,7 +22,7 @@ export const Link = cmp<LinkProps>(
         href: path,
         onClick: (e) => {
           e.preventDefault();
-          router.navigate(isFunction(path) ? path() : path, { replace, state });
+          router.navigate(getPropValue(path), { replace, state });
           anchorProps.onClick?.(e);
         },
       },

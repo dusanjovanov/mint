@@ -1,8 +1,7 @@
 import { show } from "../ShowElement";
 import { cmp } from "../component";
 import { SmllrNode } from "../types";
-import { Router } from "./Router";
-import { ROUTER_CTX } from "./constants";
+import { getRouterContext } from "./RouterProvider";
 
 type RouteProps = {
   key: string;
@@ -10,7 +9,7 @@ type RouteProps = {
 };
 
 export const Route = cmp<RouteProps>(($, { key, node }) => {
-  const router = $.getContext<Router>(ROUTER_CTX);
+  const router = getRouterContext($);
 
   return show(() => {
     const match = router.matches.value.get(key);
