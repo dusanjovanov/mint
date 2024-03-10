@@ -1,8 +1,8 @@
-import { TextElement } from "./TextElement";
 import { Css, CssOptions } from "./css";
 import { HtmlElement } from "./html";
 import { ReactiveContext } from "./reactive";
 import { Router, RouterOptions, RouterProvider } from "./router";
+import { TextElement } from "./text";
 import { DomNode, SmllrElement, SmllrNode } from "./types";
 import {
   findAncestorElement,
@@ -60,8 +60,8 @@ export class App {
 
       if (el) {
         el.app = this;
-        el._parent = parent;
-        el._index = startIndex + i;
+        el.parent = parent;
+        el.index = startIndex + i;
         els.push(el);
       }
     }
@@ -71,20 +71,17 @@ export class App {
 
   getFirstNode(els: SmllrElement[]): DomNode | undefined {
     for (const el of els) {
-      const node = el._getFirstNode();
+      const node = el.getFirstNode();
       if (node) return node;
     }
   }
 
-  findNextNode(
-    el: SmllrElement,
-    htmlAncestor: SmllrElement
-  ): DomNode | undefined {
+  findNextNode(el: SmllrElement, boundary: SmllrElement): DomNode | undefined {
     let nextEl = getNextEl(el);
 
     while (nextEl) {
-      if (nextEl._isInserted) {
-        const nextNode = nextEl._getFirstNode();
+      if (nextEl.isInserted) {
+        const nextNode = nextEl.getFirstNode();
         if (nextNode) {
           return nextNode;
         }
@@ -92,46 +89,53 @@ export class App {
       nextEl = getNextEl(nextEl);
     }
 
-    if (el._parent !== htmlAncestor) {
-      return this.findNextNode(el._parent, htmlAncestor);
+    if (el.parent !== boundary) {
+      return this.findNextNode(el.parent, boundary);
     }
   }
 
   getNodes(els: SmllrElement[]) {
-    return els.map((el) => el._getNodes()).flat(Infinity) as DomNode[];
+    return els.map((el) => el.getNodes()).flat(Infinity) as DomNode[];
   }
 
   insert(els: SmllrElement[]) {
     for (const el of els) {
-      const htmlAncestor = findAncestorElement(el._parent, (current) =>
-        isElementOfType(current, "html")
+      const boundary = findAncestorElement(
+        el.parent,
+        (current) =>
+          isElementOfType(current, "html") || isElementOfType(current, "portal")
       ) as HtmlElement;
-      if (!htmlAncestor || !htmlAncestor._domNode) continue;
 
-      const nextNode = this.findNextNode(el, htmlAncestor);
+      const domParent = isElementOfType(boundary, "portal")
+        ? boundary.target
+        : boundary.domNode;
 
-      const nodes = el._getNodes();
+      if (!domParent) continue;
+
+      const nextNode = this.findNextNode(el, boundary);
+
+      const nodes = el.getNodes();
 
       for (const node of nodes) {
-        htmlAncestor._domNode.insertBefore(node, nextNode ?? null);
+        domParent.insertBefore(node, nextNode ?? null);
       }
     }
     this.onInsert(els);
   }
 
   onInsert(els: SmllrElement[]) {
-    els.forEach((el) => el._onInsert());
+    els.forEach((el) => el.onInsert());
   }
 
   remove(els: SmllrElement[]) {
-    els.forEach((el) => el._remove());
+    els.forEach((el) => el.remove());
   }
 
-  _toDom(els: SmllrElement[]) {
+  toDom(els: SmllrElement[]) {
     const nodes: DomNode[] = [];
 
     for (const el of els) {
-      const elNodes = el._toDom();
+      const elNodes = el.toDom();
 
       if (elNodes == null) continue;
 
@@ -147,8 +151,8 @@ export class App {
     return nodes;
   }
 
-  _toString(els: SmllrElement[]) {
-    return els.map((el) => el._toHtml()).join("");
+  toHtml(els: SmllrElement[]) {
+    return els.map((el) => el.toHtml()).join("");
   }
 
   /** Creates DOM elements from node and inserts them into the container. */
@@ -158,8 +162,7 @@ export class App {
       props: {},
       nodes: [],
     });
-    containerEl._domNode = container;
-    containerEl._isInserted = true;
+    containerEl.domNode = container;
 
     const els = this.createElements({
       node: RouterProvider({ router: this.router, node }),
@@ -168,7 +171,7 @@ export class App {
 
     containerEl.children = els;
 
-    container.append(...this._toDom(els));
+    container.append(...this.toDom(els));
 
     this.onInsert(els);
   }
@@ -177,8 +180,8 @@ export class App {
   ssr(node: SmllrNode) {
     const els = this.createElements({ node, parent: {} as SmllrElement });
 
-    return this._toString(els);
+    return this.toHtml(els);
   }
 }
 
-const getNextEl = (el: SmllrElement) => el._parent?.children?.[el._index + 1];
+const getNextEl = (el: SmllrElement) => el.parent?.children?.[el.index + 1];

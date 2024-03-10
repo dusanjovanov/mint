@@ -1,8 +1,8 @@
 import * as CSS from "csstype";
-import { HtmlElement } from "../html";
 import { CSSObject } from "./css";
 import { DomEventProps } from "./events";
 import { SmllrNode } from "./nodes";
+import { ReactiveProp } from "./utils";
 
 export type CSSProperties = CSS.Properties<string | number>;
 
@@ -10,15 +10,15 @@ export type Booleanish = boolean | "true" | "false";
 
 export type CrossOrigin = "anonymous" | "use-credentials" | "" | undefined;
 
+export type DataSet = Record<string, any>;
+
 export type SmllrDomProps<T extends HTMLElement | SVGElement> = {
-  css?: CSSObject | (() => CSSObject);
+  css?: ReactiveProp<CSSObject>;
   node?: SmllrNode;
   data?: DataSet;
-  use?: (el: HtmlElement) => (() => void) | void;
+  use?: UseFn<T>;
 } & DomEventProps<T>;
 
-export type ReactiveProps<T> = {
-  [key in keyof T]: T[key] | (() => T[key]);
-};
+export type UseFn<T extends Element> = (el: T) => UseRemoveFn | void;
 
-export type DataSet = Record<string, any>;
+export type UseRemoveFn = () => void;

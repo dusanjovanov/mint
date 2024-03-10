@@ -13,17 +13,17 @@ export type SmllrNode =
   | SmllrNode[];
 
 export type SmllrElement = {
-  _brand: symbol;
-  _type: symbol;
+  brand: symbol;
+  type: symbol;
   children?: SmllrElement[];
-  _parent: SmllrElement;
-  _index: number;
+  parent: SmllrElement;
+  index: number;
   app: App;
-  _getNodes(): DomNode[];
-  _getFirstNode(): DomNode | undefined;
-  _isInserted: boolean;
-  _onInsert(): void;
-  _remove(): void;
-  _toDom(): DomNode | DomNode[];
-  _toHtml(): string;
+  getNodes(): DomNode[];
+  getFirstNode(): DomNode | undefined;
+  isInserted: boolean;
+  onInsert(): void;
+  remove(): void;
+  toDom(): DomNode | DomNode[];
+  toHtml(): string;
 };

@@ -3,9 +3,9 @@ import {
   Booleanish,
   CSSProperties,
   CrossOrigin,
-  ReactiveProps,
   SmllrDomProps,
 } from "./shared";
+import { ReactiveProps } from "./utils";
 
 export type SVGElementPropMap = {
   svg: SVGProps<SVGSVGElement>;

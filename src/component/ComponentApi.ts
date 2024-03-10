@@ -1,41 +1,52 @@
 import { Computed, Dep, Effect, State } from "../reactive";
 import { findAncestorElement, isElementOfType } from "../utils";
-import { ComponentElement } from "./ComponentElement";
+import { ComponentElement, LifecycleCallback } from "./ComponentElement";
 
 export class ComponentApi<Props = any> {
   constructor(el: ComponentElement<Props>) {
-    this._el = el;
+    this.el = el;
   }
-  _el;
+  el;
 
   state<Value>(initialValue: Value) {
-    return new State(initialValue, this._el.app.ctx);
+    return new State(initialValue, this.el.app.ctx);
   }
 
   computed<Value>(compute: () => Value) {
-    const c = new Computed(compute, this._el.app.ctx);
-    this._el._subs.add(c);
+    const c = new Computed(compute, this.el.app.ctx);
+    this.el.subs.add(c);
     return c;
   }
 
   effect(deps: Dep[], run: () => void) {
     const eff = new Effect(deps, run, { timing: "afterPaint" });
-    this._el._subs.add(eff);
+    this.el.subs.add(eff);
   }
 
   setContext<Value>(key: any, value: Value) {
-    this._el._context.set(key, value);
+    this.el.contextMap.set(key, value);
   }
 
   getContext<Value>(key: any) {
-    if (this._el._context.has(key)) {
-      return this._el._context.get(key) as Value;
+    if (this.el.contextMap.has(key)) {
+      return this.el.contextMap.get(key) as Value;
     }
     const compnentElWithContext = findAncestorElement(
-      this._el,
-      (current) => isElementOfType(current, "cmp") && current._context.has(key)
+      this.el,
+      (current) =>
+        isElementOfType(current, "cmp") && current.contextMap.has(key)
     ) as ComponentElement<any>;
 
-    return compnentElWithContext._context.get(key) as Value;
+    return compnentElWithContext.contextMap.get(key) as Value;
+  }
+
+  /** Called when component is inserted into the DOM. */
+  onInsert(cb: LifecycleCallback) {
+    this.el.insertCbs.push(cb);
+  }
+
+  /** Called when component is removed from the DOM. */
+  onRemove(cb: LifecycleCallback) {
+    this.el.removeCbs.push(cb);
   }
 }

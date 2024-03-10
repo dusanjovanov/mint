@@ -19,13 +19,13 @@ export class ListElement<Item> implements SmllrElement {
     this._getItemKey = getItemKey;
   }
 
-  _brand = SMLLR_EL_BRAND;
-  _type = SMLLR_EL_TYPES.list;
+  brand = SMLLR_EL_BRAND;
+  type = SMLLR_EL_TYPES.list;
   children: SmllrElement[] = [];
-  _parent!: SmllrElement;
-  _index!: number;
+  parent!: SmllrElement;
+  index!: number;
   app!: App;
-  _isInserted = false;
+  isInserted = false;
   _getArr;
   _renderItem;
   _cache: Cache<Item> = new Map();
@@ -39,27 +39,27 @@ export class ListElement<Item> implements SmllrElement {
     return item;
   }
 
-  _getNodes(): Node[] {
+  getNodes(): Node[] {
     return this.app.getNodes(this.children);
   }
 
-  _getFirstNode(): Node | undefined {
+  getFirstNode(): Node | undefined {
     return this.app.getFirstNode(this.children);
   }
 
-  _onInsert(): void {
-    this._isInserted = true;
+  onInsert(): void {
+    this.isInserted = true;
     this.app.onInsert(this.children);
   }
 
-  _remove(): void {
+  remove(): void {
     this.app.remove(this.children);
     this.children.length = 0;
     this._cache.clear();
-    this._isInserted = false;
+    this.isInserted = false;
   }
 
-  _create(arr: Item[]) {
+  create(arr: Item[]) {
     this._prevArr = [...arr];
 
     const len = arr.length;
@@ -74,7 +74,7 @@ export class ListElement<Item> implements SmllrElement {
     }
   }
 
-  _patch() {
+  patch() {
     const oldArr = this._prevArr;
     const newArr = this._getArr();
     const oldLen = oldArr.length;
@@ -83,9 +83,8 @@ export class ListElement<Item> implements SmllrElement {
 
     // fast path for prev empty
     if (oldLen === 0) {
-      this._create(newArr);
-      // this.createFreshItems();
-      this.app._toDom(this.children);
+      this.create(newArr);
+      this.app.toDom(this.children);
       this.app.insert(this.children);
     }
     // fast path for new empty
@@ -117,7 +116,7 @@ export class ListElement<Item> implements SmllrElement {
           if (listItem.index.value !== i) {
             listItem.index.value = i;
             listItem.els.forEach((el, idx) => {
-              el._index = i + idx;
+              el.index = i + idx;
             });
             toMove.push(...listItem.els);
           }
@@ -148,28 +147,28 @@ export class ListElement<Item> implements SmllrElement {
       this._cache = newCache;
 
       this.app.remove(toRemove);
-      // this.app.insert(toMove);
-      this.app._toDom(toInsert);
+      this.app.insert(toMove);
+      this.app.toDom(toInsert);
       this.app.insert(toInsert);
     }
   }
 
-  _toDom(): Node | Node[] {
+  toDom(): Node | Node[] {
     const eff = new ValueEffect(
       this._getArr,
       () => {
-        this._patch();
+        this.patch();
       },
       this.app.ctx
     );
 
-    this._create(eff.value);
-    return this.app._toDom(this.children);
+    this.create(eff.value);
+    return this.app.toDom(this.children);
   }
 
-  _toHtml(): string {
-    this._create(this._getArr());
-    return this.app._toString(this.children);
+  toHtml(): string {
+    this.create(this._getArr());
+    return this.app.toHtml(this.children);
   }
 }
 

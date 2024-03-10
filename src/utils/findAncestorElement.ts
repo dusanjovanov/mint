@@ -7,7 +7,7 @@ export const findAncestorElement = (
   let current = startEl;
 
   while (current && !condition(current)) {
-    current = current._parent;
+    current = current.parent;
   }
 
   return current as SmllrElement;

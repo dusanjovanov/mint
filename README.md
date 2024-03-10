@@ -1,4 +1,4 @@
-# 🦕 smllr 
+# 🦕 smllr
 
 [![npm version](https://badge.fury.io/js/smllr.svg)](https://www.npmjs.com/package/smllr)
 
@@ -7,7 +7,7 @@ Frontend framework
 > Work in progress - not ready for production 🚧
 
 ```ts
-const Counter = cmp(($) => {
+const Counter = component(($) => {
   const count = $.state(0);
   const doubleCount = $.computed(() => count.value * 2);
 

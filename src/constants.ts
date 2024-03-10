@@ -74,6 +74,7 @@ export const SMLLR_EL_TYPES = {
   show: Symbol.for("smllr-show"),
   cmp: Symbol.for("smllr-cmp"),
   list: Symbol.for("smllr-list"),
+  portal: Symbol.for("smllr-portal"),
 };
 
 const UNITLESS_CSS_PROPS = [

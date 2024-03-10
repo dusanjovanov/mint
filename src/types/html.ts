@@ -4,9 +4,9 @@ import {
   Booleanish,
   CSSProperties,
   CrossOrigin,
-  ReactiveProps,
   SmllrDomProps,
 } from "./shared";
+import { ReactiveProps } from "./utils";
 
 export type SmllrHTMLElementProps<T extends HTMLElement> =
   ReactiveProps<HTMLAttributes> & SmllrDomProps<T>;

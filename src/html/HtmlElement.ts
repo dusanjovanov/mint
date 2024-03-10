@@ -1,8 +1,8 @@
 import { App } from "../App";
 import { SMLLR_EL_BRAND, SMLLR_EL_TYPES, SVG_MAP } from "../constants";
-import { handleNumberCssValue } from "../css";
+import { addPxIfNeeded } from "../css";
 import { ValueEffect } from "../reactive";
-import { DataSet, SmllrElement, SmllrNode } from "../types";
+import { DataSet, UseRemoveFn, SmllrElement, SmllrNode } from "../types";
 import {
   camelToKebab,
   entries,
@@ -10,6 +10,7 @@ import {
   isEventProp,
   isFunction,
 } from "../utils";
+import { ATTRIBUTE_ALIASES, PROP_MAP } from "./constants";
 import { AllHtmlPropMap, AllHtmlTags } from "./types";
 
 export class HtmlElement implements SmllrElement {
@@ -24,60 +25,59 @@ export class HtmlElement implements SmllrElement {
   }) {
     this.tag = tag;
     this.props = props ?? {};
-    this._nodes = nodes;
+    this.nodes = nodes;
     this.isSvg = tag in SVG_MAP;
   }
-  _brand = SMLLR_EL_BRAND;
-  _type = SMLLR_EL_TYPES.html;
+  brand = SMLLR_EL_BRAND;
+  type = SMLLR_EL_TYPES.html;
   tag;
   props;
-  _nodes;
+  nodes;
   children: SmllrElement[] = [];
   isSvg;
-  _domNode: HTMLElement | SVGElement | undefined;
+  domNode: HTMLElement | SVGElement | undefined;
   app!: App;
   cssCls: string | undefined;
-  _parent!: SmllrElement;
-  _index!: number;
-  _isInserted = false;
-  _effs = new Set<ValueEffect<any>>();
-  _prevData: DataSet | undefined;
-  _prevStyle: any;
+  parent!: SmllrElement;
+  index!: number;
+  effs = new Set<ValueEffect<any>>();
+  prevData: DataSet | undefined;
+  prevStyle: any;
+  destroyUse: UseRemoveFn | undefined;
 
-  get node() {
-    return this._domNode!;
+  getNodes() {
+    return this.domNode ? [this.domNode] : [];
   }
 
-  _getNodes() {
-    return this._domNode ? [this._domNode] : [];
+  getFirstNode() {
+    return this.domNode;
   }
 
-  _getFirstNode() {
-    return this._domNode;
+  get isInserted() {
+    return !!this.domNode?.isConnected;
   }
 
-  _create() {
+  create() {
     this.children = this.app.createElements({
       parent: this,
-      node: this._nodes,
+      node: this.nodes,
     });
   }
 
-  _onInsert() {
-    this._isInserted = true;
+  onInsert() {
     if (this.props.use) {
-      this.props.use(this);
+      this.destroyUse = this.props.use(this.domNode);
     }
     this.app.onInsert(this.children);
   }
 
   setProp(key: string, value: any) {
-    if (!this._domNode) return;
+    if (!this.domNode) return;
 
     if (key === "use") return;
 
     if (isEventProp(key)) {
-      this._domNode.addEventListener(getEventTypeFromPropKey(key), value);
+      this.domNode.addEventListener(getEventTypeFromPropKey(key), value);
     }
     //
     else if (key === "style") {
@@ -91,10 +91,10 @@ export class HtmlElement implements SmllrElement {
         this.cssCls = cls;
       }
       if (this.cssCls !== cls) {
-        this._domNode.classList.remove(this.cssCls);
+        this.domNode.classList.remove(this.cssCls);
         this.cssCls = cls;
       }
-      this._domNode.classList.add(cls);
+      this.domNode.classList.add(cls);
     }
     //
     else if (key === "data") {
@@ -103,59 +103,59 @@ export class HtmlElement implements SmllrElement {
     //
     else if (PROP_MAP[key]) {
       // @ts-expect-error
-      this._domNode[key] = value;
+      this.domNode[key] = value;
     }
     //
     else {
-      this._domNode.setAttribute(ATTRIBUTE_ALIASES[key] ?? key, value);
+      this.domNode.setAttribute(ATTRIBUTE_ALIASES[key] ?? key, value);
     }
   }
 
   setDataAttr(dataSet: DataSet) {
     // remove no longer present keys
-    if (this._prevData) {
-      Object.keys(this._prevData).forEach((key) => {
+    if (this.prevData) {
+      Object.keys(this.prevData).forEach((key) => {
         if (!(key in dataSet)) {
-          delete this._domNode!.dataset[key];
+          delete this.domNode!.dataset[key];
         }
       });
     }
-    this._prevData = dataSet;
+    this.prevData = dataSet;
     // current keys
     entries(dataSet).forEach(([key, value]) => {
       if (value != null) {
-        this._domNode!.dataset[key] = value;
+        this.domNode!.dataset[key] = value;
       } else {
-        delete this._domNode!.dataset[key];
+        delete this.domNode!.dataset[key];
       }
     });
   }
 
   setStyle(styleObj: any) {
     // remove no longer present keys
-    if (this._prevStyle) {
-      Object.keys(this._prevStyle).forEach((key) => {
+    if (this.prevStyle) {
+      Object.keys(this.prevStyle).forEach((key) => {
         if (!(key in styleObj)) {
-          this._domNode!.style[key as any] = "";
+          this.domNode!.style[key as any] = "";
         }
       });
     }
-    this._prevStyle = styleObj;
+    this.prevStyle = styleObj;
     // current keys
     entries(styleObj).forEach(([key, value]) => {
-      this._domNode!.style[key as any] = handleNumberCssValue(key, value);
+      this.domNode!.style[key as any] = addPxIfNeeded(key, value);
     });
   }
 
-  _toDom() {
-    this._create();
+  toDom() {
+    this.create();
 
     const dom = this.isSvg
       ? document.createElementNS("http://www.w3.org/2000/svg", this.tag)
       : document.createElement(this.tag);
-    this._domNode = dom;
+    this.domNode = dom;
 
-    dom.append(...this.app._toDom(this.children));
+    dom.append(...this.app.toDom(this.children));
 
     entries(this.props).forEach(([key, value]) => {
       let v = this.props[key];
@@ -168,7 +168,7 @@ export class HtmlElement implements SmllrElement {
           },
           this.app.ctx
         );
-        this._effs.add(eff);
+        this.effs.add(eff);
         v = eff.value;
       }
 
@@ -178,12 +178,14 @@ export class HtmlElement implements SmllrElement {
     return dom;
   }
 
-  _remove(): void {
-    this._effs.forEach((eff) => eff._dispose());
-    this._effs.clear();
-    this._domNode?.remove();
-    this._isInserted = false;
-    this._domNode = undefined;
+  remove(): void {
+    this.effs.forEach((eff) => eff._dispose());
+    this.effs.clear();
+    this.domNode?.remove();
+    this.domNode = undefined;
+    this.app.remove(this.children);
+    this.children.length = 0;
+    this.destroyUse?.();
   }
 
   _styleObjToString(obj: any) {
@@ -197,13 +199,13 @@ export class HtmlElement implements SmllrElement {
         continue;
       }
 
-      s += `${camelToKebab(key)}:${handleNumberCssValue(key, v)};`;
+      s += `${camelToKebab(key)}:${addPxIfNeeded(key, v)};`;
     }
     return s;
   }
 
-  _toHtml(): string {
-    this._create();
+  toHtml(): string {
+    this.create();
 
     let s = `<${this.tag}`;
 
@@ -240,7 +242,7 @@ export class HtmlElement implements SmllrElement {
     }
 
     if (this.children.length > 0) {
-      const childrenString = this.app._toString(this.children);
+      const childrenString = this.app.toHtml(this.children);
       s += `>${childrenString}</${this.tag}>`;
     }
     //
@@ -251,19 +253,6 @@ export class HtmlElement implements SmllrElement {
     return s;
   }
 }
-
-// html props treated as element properties ( not attributes )
-export const PROP_MAP: Record<string, true> = {
-  checked: true,
-  selected: true,
-  type: true,
-  value: true,
-};
-
-export const ATTRIBUTE_ALIASES: Record<string, string> = {
-  className: "class",
-  htmlFor: "for",
-};
 
 export const htm = <Tag extends AllHtmlTags>(
   tag: Tag,

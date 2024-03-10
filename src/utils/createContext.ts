@@ -1,7 +1,7 @@
 import { ComponentApi } from "../component";
 
-/** Simple helper for creating a context getter and setter. */
-export const simpleCtx = <Value, Props = void>(
+/** Helper for creating a context getter and setter. */
+export const createContext = <Value, Props = void>(
   fn: (props: Props) => Value,
   key: any = {}
 ) => {

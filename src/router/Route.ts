@@ -1,5 +1,5 @@
-import { show } from "../ShowElement";
-import { cmp } from "../component";
+import { show } from "../show/ShowElement";
+import { component } from "../component";
 import { SmllrNode } from "../types";
 import { getRouterContext } from "./RouterProvider";
 
@@ -8,7 +8,7 @@ type RouteProps = {
   node: SmllrNode;
 };
 
-export const Route = cmp<RouteProps>(($, { key, node }) => {
+export const Route = component<RouteProps>(($, { key, node }) => {
   const router = getRouterContext($);
 
   return show(() => {

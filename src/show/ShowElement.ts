@@ -1,7 +1,7 @@
-import { App } from "./App";
-import { SMLLR_EL_BRAND, SMLLR_EL_TYPES } from "./constants";
-import { ValueEffect } from "./reactive";
-import { DomNode, SmllrElement, SmllrNode } from "./types";
+import { App } from "../App";
+import { SMLLR_EL_BRAND, SMLLR_EL_TYPES } from "../constants";
+import { ValueEffect } from "../reactive";
+import { DomNode, SmllrElement, SmllrNode } from "../types";
 
 export class ShowElement implements SmllrElement {
   constructor({
@@ -17,8 +17,8 @@ export class ShowElement implements SmllrElement {
     this.thenNodes = then;
     this.otherwiseNodes = otherwise;
   }
-  _brand = SMLLR_EL_BRAND;
-  _type = SMLLR_EL_TYPES.show;
+  brand = SMLLR_EL_BRAND;
+  type = SMLLR_EL_TYPES.show;
   app!: App;
   when;
   thenNodes;
@@ -27,20 +27,20 @@ export class ShowElement implements SmllrElement {
   prevCondition: boolean | undefined;
   thenEls: SmllrElement[] = [];
   otherwiseEls: SmllrElement[] = [];
-  _parent!: SmllrElement;
-  _index!: number;
-  _isInserted = false;
-  _eff: ValueEffect<any> | undefined;
+  parent!: SmllrElement;
+  index!: number;
+  isInserted = false;
+  eff: ValueEffect<any> | undefined;
 
-  _getNodes() {
+  getNodes() {
     return this.app.getNodes(this.children);
   }
 
-  _getFirstNode() {
+  getFirstNode() {
     return this.app.getFirstNode(this.children);
   }
 
-  _create() {
+  create() {
     this.thenEls = this.app.createElements({
       parent: this,
       node: this.thenNodes,
@@ -51,37 +51,37 @@ export class ShowElement implements SmllrElement {
     });
   }
 
-  _update(when: boolean): void {
+  update(when: boolean): void {
     const newCondition = when;
     if (this.prevCondition !== newCondition) {
       this.prevCondition = newCondition;
       if (newCondition) {
         this.app.remove(this.otherwiseEls);
-        this.app._toDom(this.thenEls);
+        this.app.toDom(this.thenEls);
         this.app.insert(this.thenEls);
       }
       //
       else {
         this.app.remove(this.thenEls);
-        this.app._toDom(this.otherwiseEls);
+        this.app.toDom(this.otherwiseEls);
         this.app.insert(this.otherwiseEls);
       }
     }
   }
 
-  _toDom(): DomNode[] {
-    this._create();
+  toDom(): DomNode[] {
+    this.create();
 
     let value;
 
     const eff = new ValueEffect(
       this.when,
       () => {
-        this._update(eff.value);
+        this.update(eff.value);
       },
       this.app.ctx
     );
-    this._eff = eff;
+    this.eff = eff;
     value = eff.value;
 
     this.prevCondition = value;
@@ -93,28 +93,30 @@ export class ShowElement implements SmllrElement {
     else {
       this.children = this.otherwiseEls;
     }
-    return this.app._toDom(this.children);
+    return this.app.toDom(this.children);
   }
 
-  _onInsert() {
-    this._isInserted = true;
+  onInsert() {
+    this.isInserted = true;
     this.app.onInsert(this.children);
   }
 
-  _remove(): void {
-    this._eff?._dispose();
-    this._eff = undefined;
+  remove(): void {
+    this.eff?._dispose();
+    this.eff = undefined;
     this.app.remove(this.children);
     this.children.length = 0;
-    this._isInserted = false;
+    this.thenEls.length = 0;
+    this.otherwiseEls.length = 0;
+    this.isInserted = false;
   }
 
-  _toHtml(): string {
-    this._create();
+  toHtml(): string {
+    this.create();
 
     let value = this.when();
 
-    return this.app._toString(value ? this.thenEls : this.otherwiseEls);
+    return this.app.toHtml(value ? this.thenEls : this.otherwiseEls);
   }
 }
 

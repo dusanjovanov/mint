@@ -1,4 +1,4 @@
-import { cmp } from "../component";
+import { component } from "../component";
 import { htm } from "../html";
 import { HTMLAnchorElementProps, ReactiveProp, SmllrNode } from "../types";
 import { getPropValue } from "../utils";
@@ -11,7 +11,7 @@ export type LinkProps = {
 } & NavigateOptions &
   HTMLAnchorElementProps;
 
-export const Link = cmp<LinkProps>(
+export const Link = component<LinkProps>(
   ($, { node, path, replace, state, ...anchorProps }) => {
     const router = getRouterContext($);
 

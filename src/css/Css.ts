@@ -2,7 +2,7 @@ import { THEME_TOKEN_REGEX } from "../constants";
 import { CSSObject } from "../types";
 import { camelToKebab } from "../utils";
 import { createThemeVariables } from "./createThemeVariables";
-import { shouldAddPx } from "./handleNumberValue";
+import { shouldAddPx } from "./addPxIfNeeded";
 import { hash } from "./hash";
 import { CssOptions, FinishedRule, RawRule } from "./types";
 
@@ -165,10 +165,15 @@ export const MAX_RULES_PER_STYLE_EL = 65000;
 
 const TOKEN_MAP: Record<string, string> = {
   border: "color",
+  borderRight: "color",
   backgroundColor: "color",
   color: "color",
   padding: "space",
   gap: "space",
   fontSize: "fontSize",
   borderRadius: "borderRadius",
+  borderColor: "color",
+  accentColor: "color",
+  outline: "color",
+  marginBottom: "space",
 };
