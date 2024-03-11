@@ -13,7 +13,7 @@ export type CrossOrigin = "anonymous" | "use-credentials" | "" | undefined;
 export type DataSet = Record<string, any>;
 
 export type SmllrDomProps<T extends HTMLElement | SVGElement> = {
-  css?: ReactiveProp<CSSObject>;
+  css?: CssProp;
   node?: SmllrNode;
   data?: DataSet;
   use?: UseFn<T>;
@@ -22,3 +22,5 @@ export type SmllrDomProps<T extends HTMLElement | SVGElement> = {
 export type UseFn<T extends Element> = (el: T) => UseRemoveFn | void;
 
 export type UseRemoveFn = () => void;
+
+export type CssProp = ReactiveProp<CSSObject | CSSObject[]>;

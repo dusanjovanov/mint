@@ -3,3 +3,5 @@ export type ReactiveProps<T> = {
 };
 
 export type ReactiveProp<Value = any> = Value | (() => Value);
+
+export type UnwrapReactiveProp<T extends ReactiveProp> = Exclude<T, Function>;

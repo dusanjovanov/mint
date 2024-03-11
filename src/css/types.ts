@@ -1,24 +1,22 @@
-export type RawRule = {
+export type Rule = {
   key: string;
   css: string;
-  rules: RawRule[];
+  rules: Rule[];
+  serialized: string;
 };
 
 export type FinishedRule = {
-  hash: string;
   selector: string;
   css: string;
-};
-
-type ThemeGroup<Value = string | number> = Record<string, Value>;
-
-export type Theme = {
-  space?: ThemeGroup;
-  color?: ThemeGroup<string>;
-  fontSize?: ThemeGroup;
-  borderRadius?: ThemeGroup;
+  hash: string;
 };
 
 export type CssOptions = {
-  theme: Theme;
+  getTokenValue?: GetTokenValueFn;
 };
+
+export type GetTokenValueFn = (args: {
+  key: string;
+  value: string;
+  tokenName: string;
+}) => string | number;

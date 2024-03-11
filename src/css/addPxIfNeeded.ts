@@ -7,6 +7,6 @@ export const addPxIfNeeded = (key: string, value: string | number) => {
   return String(value);
 };
 
-export const shouldAddPx = (key: string, value: string | number) => {
+export const shouldAddPx = (key: string, value: any): value is number => {
   return typeof value === "number" && !UNITLESS_CSS_PROP_MAP[key];
 };

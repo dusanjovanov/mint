@@ -2,7 +2,7 @@ import { App } from "../App";
 import { SMLLR_EL_BRAND, SMLLR_EL_TYPES, SVG_MAP } from "../constants";
 import { addPxIfNeeded } from "../css";
 import { ValueEffect } from "../reactive";
-import { DataSet, UseRemoveFn, SmllrElement, SmllrNode } from "../types";
+import { DataSet, SmllrElement, SmllrNode, UseRemoveFn } from "../types";
 import {
   camelToKebab,
   entries,
@@ -37,7 +37,7 @@ export class HtmlElement implements SmllrElement {
   isSvg;
   domNode: HTMLElement | SVGElement | undefined;
   app!: App;
-  cssCls: string | undefined;
+  cssClasses: string[] = [];
   parent!: SmllrElement;
   index!: number;
   effs = new Set<ValueEffect<any>>();
@@ -85,16 +85,7 @@ export class HtmlElement implements SmllrElement {
     }
     //
     else if (key === "css") {
-      const cls = this.app.css.getCssClass(value);
-
-      if (this.cssCls == null) {
-        this.cssCls = cls;
-      }
-      if (this.cssCls !== cls) {
-        this.domNode.classList.remove(this.cssCls);
-        this.cssCls = cls;
-      }
-      this.domNode.classList.add(cls);
+      this.setCssClasses(value);
     }
     //
     else if (key === "data") {
@@ -109,6 +100,12 @@ export class HtmlElement implements SmllrElement {
     else {
       this.domNode.setAttribute(ATTRIBUTE_ALIASES[key] ?? key, value);
     }
+  }
+
+  setCssClasses(value: any) {
+    const className = this.app.css.getScopedCssClass(value);
+
+    this.domNode!.classList.add(className);
   }
 
   setDataAttr(dataSet: DataSet) {
@@ -225,7 +222,7 @@ export class HtmlElement implements SmllrElement {
       }
 
       if (key === "css") {
-        const cls = this.app.css.getCssClass(v);
+        const cls = this.app.css.getScopedCssClass(v);
         propsStrings.push(`class="${cls}"`);
       }
       //

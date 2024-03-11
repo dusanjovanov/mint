@@ -1,24 +1,18 @@
-import { THEME_TOKEN_REGEX } from "../constants";
-import { CSSObject } from "../types";
-import { camelToKebab } from "../utils";
-import { createThemeVariables } from "./createThemeVariables";
-import { shouldAddPx } from "./addPxIfNeeded";
+import { cssPropToObject } from "./cssPropToObject";
+import { getFinishedRules } from "./getFinishedRules";
+import { getRuleFromCssObject } from "./getRuleFromCssObject";
 import { hash } from "./hash";
-import { CssOptions, FinishedRule, RawRule } from "./types";
+import { CssOptions } from "./types";
 
 export class Css {
   constructor(options?: CssOptions) {
-    if (options?.theme) {
-      this.theme = createThemeVariables(options.theme);
-      const className = this.getCssClass(this.theme.cssObject);
-      document.body.classList.add(className);
-    }
+    this.options = options ?? {};
   }
   total = 0;
   els: HTMLStyleElement[] = [];
   useStyleSheet = process.env.NODE_ENV === "production";
   cache: CssCache = {};
-  theme;
+  options;
 
   createStyleElement() {
     const el = document.createElement("style");
@@ -51,129 +45,31 @@ export class Css {
     this.total++;
   }
 
-  getCssClass(obj: any) {
-    const rules = this.getScopedCssRules(obj);
-
-    for (const rule of rules) {
-      if (!this.cache[rule.hash]) {
-        this.cache[rule.hash] = true;
-        this.insertRule(`${rule.selector}{${rule.css}}`);
-      }
-    }
-
-    return rules[0].selector.slice(1);
-  }
-
-  getScopedCssRules(cssObject: CSSObject): FinishedRule[] {
-    const rawRule = this.handleCssObject(cssObject);
-
-    const hashString = hash(rawRule.css);
-    const className = `sm-${hashString}`;
+  getScopedCssClass(cssProp: any) {
+    const mergedObj = cssPropToObject(cssProp);
+    const rule = getRuleFromCssObject(mergedObj, "", this.options);
+    const hashed = hash(rule.serialized);
+    const className = `sm-${hashed}`;
     const selector = `.${className}`;
 
-    return [
-      {
-        hash: hashString,
-        css: rawRule.css,
-        selector,
-      },
-      ...this.handleCssRules(selector, rawRule.rules),
-    ];
-  }
+    const finishedRules = getFinishedRules(selector, rule.rules);
 
-  handleCssRules(parentSelector: string, rules: RawRule[]) {
-    const result: FinishedRule[] = [];
-
-    for (const rule of rules) {
-      let selector;
-
-      if (rule.key.indexOf("&") === 0) {
-        selector = rule.key.replace(/&/g, parentSelector);
-      }
-      //
-      else if (rule.key.indexOf(":") === 0) {
-        selector = `${parentSelector}${rule.key}`;
-      }
-      //
-      else if (rule.key.indexOf("*") === 0) {
-        selector = `${parentSelector} *`;
-      }
-      //
-      else {
-        selector = `${parentSelector} ${rule.key}`;
-      }
-
-      result.push(
-        {
-          hash: hash(`${selector}{${rule.css}}`),
-          selector,
-          css: rule.css,
-        },
-        ...this.handleCssRules(selector, rule.rules)
-      );
+    if (!this.cache[hashed]) {
+      this.insertRule(`${selector}{${rule.css}}`);
+      this.cache[hashed] = true;
     }
 
-    return result;
-  }
-
-  handleCssObject(cssObject: CSSObject, key?: string) {
-    const result: RawRule = {
-      key: key!,
-      css: "",
-      rules: [],
-    };
-
-    const keys = Object.keys(cssObject);
-
-    for (const key of keys) {
-      let v = cssObject[key];
-
-      if (v == null) {
-        continue;
+    finishedRules.forEach((rule) => {
+      if (!this.cache[rule.hash]) {
+        this.insertRule(`${rule.selector}{${rule.css}}`);
+        this.cache[rule.hash] = true;
       }
+    });
 
-      if (typeof v === "object") {
-        result.rules.push(this.handleCssObject(v as any, key));
-        continue;
-      }
-
-      result.css += `${camelToKebab(key)}:${this.getCssValue(key, v)};`;
-    }
-
-    return result;
-  }
-
-  getCssValue(key: string, value: string | number) {
-    if (shouldAddPx(key, value)) {
-      return `${value}px`;
-    }
-    if (this.theme) {
-      return String(value).replace(THEME_TOKEN_REGEX, (match) => {
-        const tokenName = match.slice(1);
-        const themeGroup = TOKEN_MAP[key];
-        if (!themeGroup || !this.theme!.values[themeGroup]) return match;
-        return this.theme!.values[themeGroup][tokenName];
-      });
-    }
-    return value;
+    return className;
   }
 }
 
 type CssCache = Record<string, true>;
 
-export const MAX_RULES_PER_STYLE_EL = 65000;
-
-const TOKEN_MAP: Record<string, string> = {
-  border: "color",
-  borderRight: "color",
-  backgroundColor: "color",
-  color: "color",
-  padding: "space",
-  gap: "space",
-  fontSize: "fontSize",
-  borderRadius: "borderRadius",
-  borderColor: "color",
-  accentColor: "color",
-  outline: "color",
-  marginBottom: "space",
-};
+const MAX_RULES_PER_STYLE_EL = 65000;
