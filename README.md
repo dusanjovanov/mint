@@ -1,4 +1,4 @@
-# 🦕 smllr
+<img src="https://github.com/dusanjovanov/smllr/blob/main/logo.png?raw=true" width="300" />
 
 [![npm version](https://badge.fury.io/js/smllr.svg)](https://www.npmjs.com/package/smllr)
 
