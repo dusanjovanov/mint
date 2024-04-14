@@ -1,3 +1,5 @@
+import { Head } from "../head";
+
 export type Rule = {
   key: string;
   css: string;
@@ -12,7 +14,9 @@ export type FinishedRule = {
 };
 
 export type CssOptions = {
+  head: Head;
   getTokenValue?: GetTokenValueFn;
+  isSsr?: boolean;
 };
 
 export type GetTokenValueFn = (args: {

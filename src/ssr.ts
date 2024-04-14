@@ -1,24 +1,37 @@
+import { AppProvider } from "./AppProvider";
 import { createHtmlString } from "./createHtmlString";
-import { Css, CssProvider } from "./css";
+import { Css } from "./css";
+import { Head } from "./head";
 import { resolveNode } from "./resolveNode";
-import { Router, RouterProvider } from "./router";
+import { Router, RouterOptions, createMemoryHistory } from "./router";
 import { SmllrElement, SmllrNode } from "./types";
 
 export const ssr = (node: SmllrNode, options: SsrOptions) => {
-  let toRender = node;
+  const router = new Router({
+    history: createMemoryHistory({
+      initialEntries: options.pathname ? [options.pathname] : ["/"],
+    }),
+    routes: options.routes,
+  });
 
-  if (options.router) {
-    toRender = RouterProvider({ router: options.router, children: toRender });
-  }
-  if (options.css) {
-    toRender = CssProvider({ css: options.css, children: toRender });
-  }
+  const head = new Head(true);
 
-  const elements = resolveNode(toRender, {} as SmllrElement);
-  return createHtmlString(elements);
+  const elements = resolveNode(
+    AppProvider({
+      css: new Css({ head, isSsr: true }),
+      router,
+      head,
+      children: node,
+    }),
+    {} as SmllrElement
+  );
+
+  const bodyHtml = createHtmlString(elements);
+
+  return `<head>${head.html}</head><body>${bodyHtml}</body>`;
 };
 
 export type SsrOptions = {
-  router?: Router;
-  css?: Css;
+  routes: RouterOptions["routes"];
+  pathname?: string;
 };

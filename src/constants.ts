@@ -53,3 +53,25 @@ export const UPPERCASE_LETTER_G_REGX = new RegExp(
   UPPERCASE_LETTER_REGX.flags + "g"
 );
 export const THEME_TOKEN_REGEX = /\$[A-Za-z0-9_]+/g;
+
+const VOID_TAGS = [
+  "area",
+  "base",
+  "br",
+  "col",
+  "embed",
+  "hr",
+  "img",
+  "input",
+  "link",
+  "meta",
+  "param",
+  "source",
+  "track",
+  "wbr",
+];
+
+export const VOID_TAGS_MAP = VOID_TAGS.reduce((m, t) => {
+  m[t] = true;
+  return m;
+}, {} as Record<string, boolean>);

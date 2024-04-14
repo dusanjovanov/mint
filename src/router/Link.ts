@@ -1,8 +1,8 @@
+import { getApp } from "../AppProvider";
 import { component } from "../component";
 import { htm } from "../html";
 import { HtmlProps, ReactiveProp } from "../types";
 import { getPropValue } from "../utils";
-import { getRouter } from "./RouterProvider";
 import { NavigateOptions } from "./types";
 
 export type LinkProps = {
@@ -12,7 +12,7 @@ export type LinkProps = {
 
 export const Link = component<LinkProps>(
   ($, { path, replace, state, children, ...anchorProps }) => {
-    const router = getRouter($);
+    const { router } = getApp($);
 
     return htm("a", {
       ...anchorProps,

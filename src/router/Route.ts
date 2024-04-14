@@ -1,7 +1,7 @@
+import { getApp } from "../AppProvider";
 import { component } from "../component";
 import { show } from "../show";
 import { SmllrNode } from "../types";
-import { getRouter } from "./RouterProvider";
 
 type RouteProps = {
   key: string;
@@ -9,7 +9,7 @@ type RouteProps = {
 };
 
 export const Route = component<RouteProps>(($, { key, children }) => {
-  const router = getRouter($);
+  const { router } = getApp($);
 
   return show(
     $.computed([router.matches], () => {

@@ -7,14 +7,18 @@ import { hash } from "./hash";
 import { CssOptions } from "./types";
 
 export class Css {
-  constructor(options?: CssOptions) {
+  constructor(options: CssOptions) {
     this.options = options ?? {};
+    this.head = options.head;
+    this.isSsr = options.isSsr ?? false;
   }
+  head;
   total = 0;
   els: HTMLStyleElement[] = [];
   useStyleSheet = process.env.NODE_ENV === "production";
   cache: CssCache = {};
   options;
+  isSsr;
 
   createStyleElement() {
     const el = document.createElement("style");
@@ -56,14 +60,31 @@ export class Css {
 
     const finishedRules = getFinishedRules(selector, rule.rules);
 
+    const ruleString = `${selector}{${rule.css}}`;
+
     if (!this.cache[hashed]) {
-      this.insertRule(`${selector}{${rule.css}}`);
+      if (this.isSsr) {
+        this.head.insertRule(ruleString);
+      }
+      //
+      else {
+        this.insertRule(ruleString);
+      }
+
       this.cache[hashed] = true;
     }
 
     finishedRules.forEach((rule) => {
+      const ruleString = `${rule.selector}{${rule.css}}`;
+
       if (!this.cache[rule.hash]) {
-        this.insertRule(`${rule.selector}{${rule.css}}`);
+        if (this.isSsr) {
+          this.head.insertRule(ruleString);
+        }
+        //
+        else {
+          this.insertRule(ruleString);
+        }
         this.cache[rule.hash] = true;
       }
     });

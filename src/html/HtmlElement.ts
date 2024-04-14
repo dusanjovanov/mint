@@ -1,11 +1,8 @@
-import {
-  ELEMENT_BRAND,
-  ELEMENT_TYPES,
-  UPPERCASE_LETTER_REGX,
-} from "../constants";
+import { APP_PROVIDER_KEY } from "../AppProvider";
+import { ELEMENT_BRAND, ELEMENT_TYPES, VOID_TAGS_MAP } from "../constants";
 import { createDomNodes } from "../createDomNodes";
 import { createHtmlString } from "../createHtmlString";
-import { CSS_PROVIDER_KEY, Css } from "../css";
+import { Css } from "../css";
 import { getContext } from "../getContext";
 import { onInsert } from "../onInsert";
 import { UnsubscribeFn } from "../reactive";
@@ -67,26 +64,6 @@ export class HtmlElement implements SmllrElement {
     });
   }
 
-  setDataAttr(dataSet: DataSet) {
-    // remove no longer present keys
-    if (this.prevData) {
-      Object.keys(this.prevData).forEach((key) => {
-        if (!(key in dataSet)) {
-          delete this.domNode!.dataset[key];
-        }
-      });
-    }
-    this.prevData = dataSet;
-    // current keys
-    entries(dataSet).forEach(([key, value]) => {
-      if (value != null) {
-        this.domNode!.dataset[key] = value;
-      } else {
-        delete this.domNode!.dataset[key];
-      }
-    });
-  }
-
   setCssClass(value: any) {
     const className = this.css.getScopedCssClass(value);
 
@@ -115,7 +92,7 @@ export class HtmlElement implements SmllrElement {
   }
 
   create() {
-    this.css = getContext(CSS_PROVIDER_KEY, this);
+    this.css = getContext<any>(APP_PROVIDER_KEY, this).css;
     this.children = resolveNode(this.props.children, this);
   }
 
@@ -184,35 +161,34 @@ export class HtmlElement implements SmllrElement {
     const propsStrings: string[] = [];
     const keys = Object.keys(this.props);
 
+    let content = "";
+
     for (const key of keys) {
-      if (isEventProp(key)) continue;
+      if (key === "on" || key === "children") continue;
+
       const value = this.props[key];
 
-      const keyAlias = ATTRIBUTE_ALIASES[key];
-
-      let v = value;
-
-      if (isReactive(v)) {
-        v = v.value;
-      }
-
       if (key === "css") {
-        const cls = this.css.getScopedCssClass(v);
+        const cls = this.css.getScopedCssClass(getReactiveValue(value));
         propsStrings.push(`class="${cls}"`);
       }
       //
       else if (key === "style") {
-        propsStrings.push(`style="${styleObjToString(v)}"`);
+        propsStrings.push(
+          `style="${styleObjToString(getReactiveValue(value))}"`
+        );
       }
       //
-      else if (key === "data") {
+      else if (key === "attrs") {
         entries(value).forEach(([k, v]) => {
-          propsStrings.push(`data-${camelToKebab(k)}="${v}"`);
+          const keyAlias = ATTRIBUTE_ALIASES[k];
+
+          propsStrings.push(`${keyAlias ?? k}="${getReactiveValue(v)}"`);
         });
       }
       //
-      else {
-        propsStrings.push(`${keyAlias ?? key}="${v}"`);
+      else if (key === "innerHtml") {
+        content = getReactiveValue(value);
       }
     }
 
@@ -220,13 +196,13 @@ export class HtmlElement implements SmllrElement {
       s += ` ${propsStrings.join(" ")}`;
     }
 
-    if (this.children.length > 0) {
-      const childrenString = createHtmlString(this.children);
-      s += `>${childrenString}</${this.tag}>`;
-    }
-    //
-    else {
-      s += "/>";
+    if (VOID_TAGS_MAP[this.tag]) {
+      s += ">";
+    } else {
+      if (content === "") {
+        content = createHtmlString(this.children);
+      }
+      s += `>${content}</${this.tag}>`;
     }
 
     return s;
@@ -249,11 +225,6 @@ export class HtmlElement implements SmllrElement {
     this.callRef(null);
   }
 }
-
-const isEventProp = (propKey: string) =>
-  propKey !== "on" &&
-  propKey.indexOf("on") === 0 &&
-  UPPERCASE_LETTER_REGX.test(propKey[2]);
 
 // html props treated as element properties ( not attributes )
 export const PROP_MAP: Record<string, true> = {

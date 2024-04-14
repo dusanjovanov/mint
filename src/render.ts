@@ -1,9 +1,11 @@
+import { AppProvider } from "./AppProvider";
 import { createDomNodes } from "./createDomNodes";
-import { Css, CssProvider } from "./css";
+import { Css } from "./css";
+import { Head } from "./head";
 import { HtmlElement } from "./html";
 import { onInsert } from "./onInsert";
 import { resolveNode } from "./resolveNode";
-import { Router, RouterProvider } from "./router";
+import { Router, RouterOptions, createBrowserHistory } from "./router";
 import { SmllrNode } from "./types";
 
 export const render = (
@@ -15,22 +17,27 @@ export const render = (
   containerEl.domNode = container;
   containerEl.index = 0;
 
-  let toRender = node;
+  const router = new Router({
+    history: createBrowserHistory(),
+    routes: options.routes,
+  });
 
-  if (options.router) {
-    toRender = RouterProvider({ router: options.router, children: toRender });
-  }
-  if (options.css) {
-    toRender = CssProvider({ css: options.css, children: toRender });
-  }
+  const head = new Head();
 
-  const elements = resolveNode(toRender, containerEl);
+  const elements = resolveNode(
+    AppProvider({
+      css: new Css({ head }),
+      router,
+      head,
+      children: node,
+    }),
+    containerEl
+  );
   const domNodes = createDomNodes(elements);
   container.append(...domNodes);
   onInsert(elements);
 };
 
 export type RenderOptions = {
-  router?: Router;
-  css?: Css;
+  routes: RouterOptions["routes"];
 };

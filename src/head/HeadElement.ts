@@ -1,7 +1,10 @@
+import { APP_PROVIDER_KEY } from "../AppProvider";
 import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
 import { createDomNodes } from "../createDomNodes";
+import { getContext } from "../getContext";
 import { resolveNode } from "../resolveNode";
 import { SmllrElement, SmllrNode } from "../types";
+import { Head } from "./Head";
 
 export class HeadElement implements SmllrElement {
   constructor(nodes: SmllrNode[]) {
@@ -14,6 +17,7 @@ export class HeadElement implements SmllrElement {
   isInserted = false;
   nodes;
   children: SmllrElement[] = [];
+  head!: Head;
 
   getNodes() {
     return [];
@@ -32,20 +36,21 @@ export class HeadElement implements SmllrElement {
   }
 
   create() {
+    this.head = getContext<any>(APP_PROVIDER_KEY, this).head;
     this.children = resolveNode(this.nodes, this);
   }
 
   toDom(): Node | Node[] {
     this.create();
     createDomNodes(this.children);
-    // this.app.head.insert(this.children);
+    this.head.insert(this.children);
 
     return [];
   }
 
   toHtml(): string {
     this.create();
-    // this.app.head.insertHtml(this.children);
+    this.head.insert(this.children);
     return "";
   }
 }

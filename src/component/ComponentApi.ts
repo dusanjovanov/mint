@@ -1,3 +1,4 @@
+import { getApp } from "../AppProvider";
 import { getContext } from "../getContext";
 import { Computed, Dep, Effect, EffectOptions, State } from "../reactive";
 import { ComponentElement, LifecycleCallback } from "./ComponentElement";
@@ -42,5 +43,9 @@ export class ComponentApi {
   /** Called when component is removed from the DOM. */
   onRemove(cb: LifecycleCallback) {
     this.el.onRemoveCbs.push(cb);
+  }
+
+  get app() {
+    return getApp(this);
   }
 }
