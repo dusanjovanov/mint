@@ -1,4 +1,5 @@
 export * from "./component";
+export { Css } from "./css";
 export * from "./globalStyle";
 export { HeadElement, head } from "./head";
 export * from "./html";

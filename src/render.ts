@@ -30,7 +30,7 @@ export const render = (
   onInsert(elements);
 };
 
-type RenderOptions = {
+export type RenderOptions = {
   router?: Router;
   css?: Css;
 };
