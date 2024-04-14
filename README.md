@@ -14,17 +14,16 @@ const Counter = component(($) => {
   const doubleCount = $.computed(() => count.value * 2);
 
   return [
-    htm("div", null, "Count is: ", () => count.value),
-    htm("div", null, "Double count is: ", () => doubleCount.value),
-    htm(
-      "button",
-      {
-        onClick: () => {
+    htm("div", { children: ["Count is: ", count] }),
+    htm("div", { children: ["Double count is: ", doubleCount] }),
+    htm("button", {
+      on: {
+        click: () => {
           count.value++;
         },
       },
-      "+"
-    ),
+      children: "+",
+    }),
   ];
 });
 
