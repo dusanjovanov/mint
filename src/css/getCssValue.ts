@@ -1,5 +1,5 @@
 import { THEME_TOKEN_REGEX } from "../constants";
-import { shouldAddPx } from "./addPxIfNeeded";
+import { shouldAddPx } from "../utils";
 import { CssOptions } from "./types";
 
 export const getCssValue = (
@@ -13,7 +13,7 @@ export const getCssValue = (
   if (options.getTokenValue) {
     return String(value).replace(THEME_TOKEN_REGEX, (match) => {
       const v = options.getTokenValue!({
-        key,
+        property: key,
         value,
         tokenName: match.slice(1),
       });

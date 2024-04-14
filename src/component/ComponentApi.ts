@@ -1,52 +1,46 @@
-import { Computed, Dep, Effect, State } from "../reactive";
-import { findAncestorElement, isElementOfType } from "../utils";
+import { getContext } from "../getContext";
+import { Computed, Dep, Effect, EffectOptions, State } from "../reactive";
 import { ComponentElement, LifecycleCallback } from "./ComponentElement";
 
-export class ComponentApi<Props = any> {
-  constructor(el: ComponentElement<Props>) {
+export class ComponentApi {
+  constructor(el: ComponentElement<any>) {
     this.el = el;
   }
   el;
 
   state<Value>(initialValue: Value) {
-    return new State(initialValue, this.el.app.ctx);
+    return new State(initialValue);
   }
 
-  computed<Value>(compute: () => Value) {
-    const c = new Computed(compute, this.el.app.ctx);
-    this.el.subs.add(c);
+  computed<Value>(deps: Dep[], compute: () => Value) {
+    const c = new Computed(deps, compute);
+    this.el.subReactives.add(c);
     return c;
   }
 
-  effect(deps: Dep[], run: () => void) {
-    const eff = new Effect(deps, run, { timing: "afterPaint" });
-    this.el.subs.add(eff);
+  effect(deps: Dep[], run: () => void, options?: EffectOptions) {
+    const eff = new Effect(deps, run, { timing: "afterPaint", ...options });
+    this.el.subReactives.add(eff);
   }
 
   setContext<Value>(key: any, value: Value) {
-    this.el.contextMap.set(key, value);
+    this.el.context.set(key, value);
   }
 
   getContext<Value>(key: any) {
-    if (this.el.contextMap.has(key)) {
-      return this.el.contextMap.get(key) as Value;
+    if (this.el.context.has(key)) {
+      return this.el.context.get(key) as Value;
     }
-    const compnentElWithContext = findAncestorElement(
-      this.el,
-      (current) =>
-        isElementOfType(current, "cmp") && current.contextMap.has(key)
-    ) as ComponentElement<any>;
-
-    return compnentElWithContext.contextMap.get(key) as Value;
+    return getContext<Value>(key, this.el);
   }
 
   /** Called when component is inserted into the DOM. */
   onInsert(cb: LifecycleCallback) {
-    this.el.insertCbs.push(cb);
+    this.el.onInsertCbs.push(cb);
   }
 
   /** Called when component is removed from the DOM. */
   onRemove(cb: LifecycleCallback) {
-    this.el.removeCbs.push(cb);
+    this.el.onRemoveCbs.push(cb);
   }
 }

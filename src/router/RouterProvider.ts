@@ -1,21 +1,20 @@
-import { createContext } from "..";
 import { component } from "../component";
 import { SmllrNode } from "../types";
+import { createContext } from "../utils";
 import { Router } from "./Router";
 
 type RouterProviderProps = {
   router: Router;
-  node: SmllrNode;
+  children: SmllrNode;
 };
 
 export const RouterProvider = component<RouterProviderProps>(
-  ($, { router, node }) => {
+  ($, { router, children }) => {
     setRouterContext($, router);
-
-    return node;
+    return children;
   }
 );
 
-export const [getRouterContext, setRouterContext] = createContext(
+export const [getRouter, setRouterContext] = createContext(
   (router: Router) => router
 );

@@ -1,18 +1,21 @@
-import { show } from "../show/ShowElement";
 import { component } from "../component";
+import { show } from "../show";
 import { SmllrNode } from "../types";
-import { getRouterContext } from "./RouterProvider";
+import { getRouter } from "./RouterProvider";
 
 type RouteProps = {
   key: string;
-  node: SmllrNode;
+  children: SmllrNode;
 };
 
-export const Route = component<RouteProps>(($, { key, node }) => {
-  const router = getRouterContext($);
+export const Route = component<RouteProps>(($, { key, children }) => {
+  const router = getRouter($);
 
-  return show(() => {
-    const match = router.matches.value.get(key);
-    return !!match;
-  }, node);
+  return show(
+    $.computed([router.matches], () => {
+      const match = router.matches.value.get(key);
+      return !!match;
+    }),
+    children
+  );
 });

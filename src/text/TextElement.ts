@@ -1,66 +1,58 @@
-import { App } from "../App";
-import { SMLLR_EL_BRAND, SMLLR_EL_TYPES } from "../constants";
-import { ValueEffect } from "../reactive";
-import { DomNode, SmllrElement, TextNode } from "../types";
-import { isFunction } from "../utils";
+import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
+import { Reactive, UnsubscribeFn } from "../reactive";
+import { SmllrElement, ReactiveProp, TextNode } from "../types";
+import { getPropValue, isReactive } from "../utils";
 
 export class TextElement implements SmllrElement {
-  constructor({ text }: { text: TextNode | (() => TextNode) }) {
+  constructor(text: ReactiveProp<TextNode>) {
     this.text = text;
   }
-  brand = SMLLR_EL_BRAND;
-  type = SMLLR_EL_TYPES.text;
+  brand = ELEMENT_BRAND;
+  type = ELEMENT_TYPES.text;
   text;
-  app!: App;
   parent!: SmllrElement;
   index!: number;
-  eff: ValueEffect<any> | undefined;
   domNode: Text | undefined;
-
-  getNodes() {
-    return this.domNode ? [this.domNode] : [];
-  }
-
-  getFirstNode(): DomNode | undefined {
-    return this.domNode;
-  }
+  unsub: UnsubscribeFn | undefined;
 
   get isInserted() {
     return !!this.domNode?.isConnected;
   }
 
-  onInsert() {}
+  getNodes() {
+    return this.domNode ? [this.domNode] : [];
+  }
 
-  toDom() {
-    let value = String(this.text);
-
-    if (isFunction(this.text)) {
-      const eff = new ValueEffect(
-        this.text,
-        () => {
-          this.domNode!.textContent = String(eff.value);
-        },
-        this.app.ctx
-      );
-      this.eff = eff;
-      value = String(eff.value);
-    }
-
-    this.domNode = document.createTextNode(value);
+  getFirstNode() {
     return this.domNode;
   }
 
-  remove(): void {
-    this.eff?._dispose();
-    this.eff = undefined;
-    this.domNode?.remove();
-    this.domNode = undefined;
+  toDom() {
+    let value = this.text;
+
+    if (isReactive(this.text)) {
+      value = this.text.value;
+
+      this.unsub = this.text.subscribe(() => {
+        const value = (this.text as Reactive).value;
+        this.domNode!.textContent = String(value);
+      });
+    }
+
+    this.domNode = document.createTextNode(String(value));
+    return this.domNode;
   }
 
   toHtml(): string {
-    if (isFunction(this.text)) {
-      return String(this.text());
-    }
-    return String(this.text);
+    return String(getPropValue(this.text));
+  }
+
+  onInsert() {}
+
+  remove() {
+    this.unsub?.();
+    this.unsub = undefined;
+    this.domNode?.remove();
+    this.domNode = undefined;
   }
 }

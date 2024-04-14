@@ -1,89 +1,91 @@
-import { App } from "..";
-import { SMLLR_EL_BRAND, SMLLR_EL_TYPES } from "../constants";
-import { Sub } from "../reactive";
+import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
+import { createDomNodes } from "../createDomNodes";
+import { createHtmlString } from "../createHtmlString";
+import { getFirstNode } from "../getFirstDomNode";
+import { getNodes } from "../getNodes";
+import { onInsert } from "../onInsert";
+import { SubReactive } from "../reactive";
+import { removeElements } from "../removeElements";
+import { resolveNode } from "../resolveNode";
 import { SmllrElement, SmllrNode } from "../types";
 import { ComponentApi } from "./ComponentApi";
 
 export class ComponentElement<Props> implements SmllrElement {
-  constructor({ render, props }: ComponentElementArgs<Props>) {
+  constructor({
+    render,
+    props,
+  }: {
+    render: ComponentRenderFn<Props>;
+    props: Props;
+  }) {
     this.render = render;
     this.props = props;
   }
-  brand = SMLLR_EL_BRAND;
-  type = SMLLR_EL_TYPES.cmp;
-  children: SmllrElement[] = [];
-  parent!: SmllrElement;
-  index!: number;
-  app!: App;
-  isInserted = false;
+  brand = ELEMENT_BRAND;
+  type = ELEMENT_TYPES.component;
   render;
   props;
-  subs = new Set<Sub>();
-  contextMap = new Map<any, any>();
-  insertCbs: LifecycleCallback[] = [];
-  removeCbs: LifecycleCallback[] = [];
+  parent!: SmllrElement;
+  index!: number;
+  isInserted = false;
+  children: SmllrElement[] = [];
+  context = new Map();
+  onInsertCbs: LifecycleCallback[] = [];
+  onRemoveCbs: LifecycleCallback[] = [];
+  subReactives = new Set<SubReactive>();
 
-  getNodes(): Node[] {
-    return this.app.getNodes(this.children);
+  getNodes() {
+    return getNodes(this.children);
   }
 
-  getFirstNode(): Node | undefined {
-    return this.app.getFirstNode(this.children);
-  }
-
-  onInsert(): void {
-    this.isInserted = true;
-    this.app.onInsert(this.children);
-    this.insertCbs.forEach((cb) => cb());
-  }
-
-  remove(): void {
-    this.subs.forEach((s) => s._dispose());
-    this.subs.clear();
-    this.app.remove(this.children);
-    this.children.length = 0;
-    this.isInserted = false;
-    this.removeCbs.forEach((cb) => cb());
+  getFirstNode() {
+    return getFirstNode(this.children);
   }
 
   create() {
-    const smllrNode = this.render(new ComponentApi(this), this.props);
-    this.children = this.app.createElements({ node: smllrNode, parent: this });
+    const node = this.render(new ComponentApi(this), this.props);
+    this.children = resolveNode(node, this);
   }
 
-  toDom(): Node | Node[] {
+  toDom() {
     this.create();
-    return this.app.toDom(this.children);
+    return createDomNodes(this.children);
   }
 
-  toHtml(): string {
+  toHtml() {
     this.create();
-    return this.app.toHtml(this.children);
+    return createHtmlString(this.children);
+  }
+
+  onInsert() {
+    this.isInserted = true;
+    onInsert(this.children);
+    this.onInsertCbs.forEach((cb) => cb());
+  }
+
+  remove() {
+    this.subReactives.forEach((s) => s.dispose());
+    removeElements(this.children);
+    this.children.length = 0;
+    this.isInserted = false;
+    this.onRemoveCbs.forEach((cb) => cb());
+    this.onInsertCbs.length = 0;
+    this.onRemoveCbs.length = 0;
   }
 }
 
 export const component =
-  <Props = void | null>(render: ComponentRenderFn<PropsWithNodes<Props>>) =>
-  (props: Props, ...nodes: SmllrNode[]) => {
+  <Props = void | null>(render: ComponentRenderFn<Props>) =>
+  (props: Props) => {
     return new ComponentElement({
       render,
-      props: {
-        ...props,
-        nodes,
-      },
+      props,
     });
   };
 
-type PropsWithNodes<Props> = Props & { nodes: SmllrNode[] };
-
-type ComponentRenderFn<Props> = (
-  $: ComponentApi<Props>,
+export type ComponentRenderFn<Props> = (
+  api: ComponentApi,
   props: Props
 ) => SmllrNode;
-
-type ComponentElementArgs<Props> = {
-  render: ComponentRenderFn<Props>;
-  props: Props;
-};
 
 export type LifecycleCallback = () => void;

@@ -1,4 +1,5 @@
 import { Computed, State } from "../reactive";
+import { resolveNode } from "../resolveNode";
 import { ListElement } from "./ListElement";
 
 export class ListItem<Item> {
@@ -12,15 +13,11 @@ export class ListItem<Item> {
     el: ListElement<Item>;
   }) {
     this.item = item;
-    this.index = new State(index, el.app.ctx);
-    this.computedIndex = new Computed(() => this.index.value, el.app.ctx);
+    this.index = new State(index);
+    this.computedIndex = new Computed([this.index], () => this.index.value);
     this.el = el;
-    const smllrNode = this.el._renderItem(this.item, this.computedIndex);
-    this.els = this.el.app.createElements({
-      node: smllrNode,
-      parent: this.el,
-      startIndex: index,
-    });
+    const mintNode = this.el._renderItem(this.item, this.computedIndex);
+    this.els = resolveNode(mintNode, this.el, index);
   }
   item;
   index;

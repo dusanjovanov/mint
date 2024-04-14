@@ -3,49 +3,44 @@ import {
   EffectCleanupFn,
   EffectFn,
   EffectOptions,
-  Sub,
-  Subs,
+  SubReactive,
+  UnsubscribeFn,
 } from "./types";
 
-export class Effect implements Sub {
+export class Effect implements SubReactive {
   constructor(deps: Dep[], fn: EffectFn, options?: EffectOptions) {
-    this._deps = deps.map((d) => d._subs);
     this._fn = fn;
     this._timing = options?.timing ?? "sync";
 
-    deps.forEach((d) => d._subscribe(this));
+    deps.forEach((d) =>
+      d.subscribe(() => {
+        this.scheduledRun();
+      })
+    );
 
-    this._scheduledRun();
+    this.scheduledRun();
   }
-  _deps: Subs[] = [];
   _fn;
   _cleanup: EffectCleanupFn | undefined;
   _timing;
+  _unsubs: UnsubscribeFn[] = [];
 
-  _run() {
+  run() {
     if (this._cleanup) this._cleanup();
     this._cleanup = this._fn();
   }
 
-  _scheduledRun() {
+  scheduledRun() {
     if (this._timing === "afterPaint") {
-      requestAnimationFrame(() => this._run());
+      requestAnimationFrame(() => this.run());
     }
     //
     else {
-      this._run();
+      this.run();
     }
   }
 
-  _notify() {
-    this._scheduledRun();
-  }
-
-  _dispose() {
-    this._cleanup?.();
-    for (const subs of this._deps) {
-      subs.delete(this);
-    }
-    this._deps.length = 0;
+  dispose() {
+    this._unsubs.forEach((u) => u());
   }
 }

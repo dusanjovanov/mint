@@ -1,53 +1,36 @@
-import { App } from "../App";
-import { Effect, State } from "../reactive";
+import { State } from "../reactive";
 import {
   NavigateOptions,
   RouteMatch,
-  RouterLocation,
   RouterMatches,
   RouterOptions,
 } from "./types";
 
 export class Router {
-  constructor(options: RouterOptions, app: App) {
-    this.location = new State(this._getCurrentLocation(), app.ctx);
-    this.routes = options.routes;
-
-    this.matches = new State(new Map() as RouterMatches, app.ctx);
-
-    new Effect([this.location], () => {
-      this._matchRoutes();
+  constructor({ history, routes }: RouterOptions) {
+    this.history = history;
+    this.routes = routes;
+    this.history.listen(() => {
+      this.matchRoutes();
     });
-
-    window.addEventListener("popstate", () => {
-      this.location.value = this._getCurrentLocation();
-    });
+    this.matches = new State(new Map() as RouterMatches);
+    this.matchRoutes();
   }
-  location;
   matches;
   routes;
+  history;
 
-  _getCurrentLocation(): RouterLocation {
-    return {
-      url: new URL(window.location.href),
-      state: window.history.state,
-    };
-  }
-
-  _matchRoutes() {
+  matchRoutes() {
     const newMatches: RouterMatches = new Map();
 
     this.routes.forEach((route) => {
-      const match = this._matchRoute(
-        this.location.value.url.pathname,
-        route.path
-      );
+      const match = this.matchPath(this.history.location.pathname, route.path);
       newMatches.set(route.key, match);
     });
     this.matches.value = newMatches;
   }
 
-  _matchRoute(urlPath: string, routePath: string): RouteMatch | null {
+  matchPath(urlPath: string = "", routePath: string): RouteMatch | null {
     if (routePath === "/") {
       if (urlPath === "/") return { params: {} };
       else return null;
@@ -86,21 +69,12 @@ export class Router {
   }
 
   navigate(path: string, options?: NavigateOptions) {
-    const newUrl = new URL(this.location.value.url);
-    newUrl.pathname = path;
-
-    const newLocation: RouterLocation = {
-      url: newUrl,
-      state: options?.state ?? {},
-    };
-
     if (options?.replace) {
-      window.history.replaceState(options.state, "", newUrl);
+      this.history.replace(path, options.state);
     }
     //
     else {
-      window.history.pushState(options?.state, "", newUrl);
+      this.history.push(path, options?.state);
     }
-    this.location.value = newLocation;
   }
 }

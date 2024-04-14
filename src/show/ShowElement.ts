@@ -1,127 +1,110 @@
-import { App } from "../App";
-import { SMLLR_EL_BRAND, SMLLR_EL_TYPES } from "../constants";
-import { ValueEffect } from "../reactive";
+import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
+import { createDomNodes } from "../createDomNodes";
+import { createHtmlString } from "../createHtmlString";
+import { getFirstNode } from "../getFirstDomNode";
+import { getNodes } from "../getNodes";
+import { insertElements } from "../insertElements";
+import { onInsert } from "../onInsert";
+import { Reactive, UnsubscribeFn } from "../reactive";
+import { removeElements } from "../removeElements";
+import { resolveNode } from "../resolveNode";
 import { DomNode, SmllrElement, SmllrNode } from "../types";
 
 export class ShowElement implements SmllrElement {
-  constructor({
-    when,
-    then,
-    otherwise,
-  }: {
-    when: () => boolean;
-    then: SmllrNode;
-    otherwise: SmllrNode;
-  }) {
-    this.when = when;
-    this.thenNodes = then;
-    this.otherwiseNodes = otherwise;
+  constructor(condition: Reactive, positive: SmllrNode, negative?: SmllrNode) {
+    this.condition = condition;
+    this.positiveNode = positive;
+    this.negativeNode = negative;
   }
-  brand = SMLLR_EL_BRAND;
-  type = SMLLR_EL_TYPES.show;
-  app!: App;
-  when;
-  thenNodes;
-  otherwiseNodes;
-  children: SmllrElement[] = [];
-  prevCondition: boolean | undefined;
-  thenEls: SmllrElement[] = [];
-  otherwiseEls: SmllrElement[] = [];
+  brand = ELEMENT_BRAND;
+  type = ELEMENT_TYPES.show;
   parent!: SmllrElement;
   index!: number;
+  positive: SmllrElement[] = [];
+  negative: SmllrElement[] = [];
+  children: SmllrElement[] = [];
   isInserted = false;
-  eff: ValueEffect<any> | undefined;
+  prevCondition: boolean | undefined;
+  condition;
+  positiveNode;
+  negativeNode;
+  unsub: UnsubscribeFn | undefined;
 
   getNodes() {
-    return this.app.getNodes(this.children);
+    return getNodes(this.children);
   }
 
-  getFirstNode() {
-    return this.app.getFirstNode(this.children);
+  getFirstNode(): DomNode | undefined {
+    return getFirstNode(this.children);
   }
 
-  create() {
-    this.thenEls = this.app.createElements({
-      parent: this,
-      node: this.thenNodes,
-    });
-    this.otherwiseEls = this.app.createElements({
-      parent: this,
-      node: this.otherwiseNodes,
-    });
-  }
+  update() {
+    const condition = this.condition.value;
 
-  update(when: boolean): void {
-    const newCondition = when;
-    if (this.prevCondition !== newCondition) {
-      this.prevCondition = newCondition;
-      if (newCondition) {
-        this.app.remove(this.otherwiseEls);
-        this.app.toDom(this.thenEls);
-        this.app.insert(this.thenEls);
+    if (condition !== this.prevCondition) {
+      this.prevCondition = condition;
+
+      this.children = condition ? this.positive : this.negative;
+
+      if (condition) {
+        removeElements(this.negative);
       }
       //
       else {
-        this.app.remove(this.thenEls);
-        this.app.toDom(this.otherwiseEls);
-        this.app.insert(this.otherwiseEls);
+        removeElements(this.positive);
       }
+
+      createDomNodes(this.children);
+      insertElements(this.children);
     }
   }
 
-  toDom(): DomNode[] {
+  create() {
+    this.positive = resolveNode(this.positiveNode, this);
+    this.negative = resolveNode(this.negativeNode, this);
+
+    const condition = this.condition.value;
+
+    this.children = condition ? this.positive : this.negative;
+  }
+
+  toDom() {
     this.create();
+    this.prevCondition = this.condition.value;
 
-    let value;
+    this.unsub = this.condition.subscribe(() => {
+      this.update();
+    });
 
-    const eff = new ValueEffect(
-      this.when,
-      () => {
-        this.update(eff.value);
-      },
-      this.app.ctx
-    );
-    this.eff = eff;
-    value = eff.value;
-
-    this.prevCondition = value;
-
-    if (value) {
-      this.children = this.thenEls;
-    }
-    //
-    else {
-      this.children = this.otherwiseEls;
-    }
-    return this.app.toDom(this.children);
-  }
-
-  onInsert() {
-    this.isInserted = true;
-    this.app.onInsert(this.children);
-  }
-
-  remove(): void {
-    this.eff?._dispose();
-    this.eff = undefined;
-    this.app.remove(this.children);
-    this.children.length = 0;
-    this.thenEls.length = 0;
-    this.otherwiseEls.length = 0;
-    this.isInserted = false;
+    return createDomNodes(this.children);
   }
 
   toHtml(): string {
     this.create();
+    return createHtmlString(this.children);
+  }
 
-    let value = this.when();
+  onInsert() {
+    this.isInserted = true;
+    onInsert(this.children);
+  }
 
-    return this.app.toHtml(value ? this.thenEls : this.otherwiseEls);
+  remove() {
+    this.unsub?.();
+    this.unsub = undefined;
+    removeElements(this.children);
+    this.children.length = 0;
+    this.positive.length = 0;
+    this.negative.length = 0;
+    this.isInserted = false;
+    this.prevCondition = undefined;
   }
 }
 
 export const show = (
-  when: () => boolean,
-  then: SmllrNode,
-  otherwise?: SmllrNode
-) => new ShowElement({ when, then, otherwise });
+  condition: Reactive,
+  positive: SmllrNode,
+  negative?: SmllrNode
+) => {
+  return new ShowElement(condition, positive, negative);
+};

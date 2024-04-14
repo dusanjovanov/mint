@@ -1,32 +1,37 @@
-import { App } from "../App";
-import { SMLLR_EL_BRAND, SMLLR_EL_TYPES } from "../constants";
-import { Computed, ValueEffect } from "../reactive";
+import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
+import { createDomNodes } from "../createDomNodes";
+import { createHtmlString } from "../createHtmlString";
+import { getFirstNode } from "../getFirstDomNode";
+import { getNodes } from "../getNodes";
+import { insertElements } from "../insertElements";
+import { onInsert } from "../onInsert";
+import { Computed, Reactive } from "../reactive";
+import { removeElements } from "../removeElements";
 import { SmllrElement, SmllrNode } from "../types";
 import { ListItem } from "./ListItem";
 
 export class ListElement<Item> implements SmllrElement {
   constructor({
-    getArr,
+    array,
     renderItem,
     getItemKey,
   }: {
-    getArr: () => Item[];
+    array: Reactive<Item[]>;
     renderItem: RenderItemFn<Item>;
     getItemKey?: GetItemKeyFn<Item>;
   }) {
-    this._getArr = getArr;
+    this.array = array;
     this._renderItem = renderItem;
     this._getItemKey = getItemKey;
   }
 
-  brand = SMLLR_EL_BRAND;
-  type = SMLLR_EL_TYPES.list;
+  brand = ELEMENT_BRAND;
+  type = ELEMENT_TYPES.list;
   children: SmllrElement[] = [];
   parent!: SmllrElement;
   index!: number;
-  app!: App;
   isInserted = false;
-  _getArr;
+  array;
   _renderItem;
   _cache: Cache<Item> = new Map();
   _prevArr!: Item[];
@@ -39,33 +44,33 @@ export class ListElement<Item> implements SmllrElement {
     return item;
   }
 
-  getNodes(): Node[] {
-    return this.app.getNodes(this.children);
+  getNodes() {
+    return getNodes(this.children);
   }
 
-  getFirstNode(): Node | undefined {
-    return this.app.getFirstNode(this.children);
+  getFirstNode() {
+    return getFirstNode(this.children);
   }
 
   onInsert(): void {
     this.isInserted = true;
-    this.app.onInsert(this.children);
+    onInsert(this.children);
   }
 
   remove(): void {
-    this.app.remove(this.children);
+    removeElements(this.children);
     this.children.length = 0;
     this._cache.clear();
     this.isInserted = false;
   }
 
-  create(arr: Item[]) {
-    this._prevArr = [...arr];
+  create() {
+    this._prevArr = [...this.array.value];
 
-    const len = arr.length;
+    const len = this.array.value.length;
 
     for (let i = 0; i < len; i++) {
-      const item = arr[i];
+      const item = this.array.value[i];
 
       const listItem = new ListItem({ item, index: i, el: this });
 
@@ -76,21 +81,21 @@ export class ListElement<Item> implements SmllrElement {
 
   patch() {
     const oldArr = this._prevArr;
-    const newArr = this._getArr();
+    const newArr = this.array.value;
     const oldLen = oldArr.length;
     const newLen = newArr.length;
     this._prevArr = [...newArr];
 
     // fast path for prev empty
     if (oldLen === 0) {
-      this.create(newArr);
-      this.app.toDom(this.children);
-      this.app.insert(this.children);
+      this.create();
+      createDomNodes(this.children);
+      insertElements(this.children);
     }
     // fast path for new empty
     else if (newLen === 0) {
       const children = [...this.children];
-      this.app.remove(children);
+      removeElements(children);
       this.children.length = 0;
       this._cache.clear();
     }
@@ -146,29 +151,25 @@ export class ListElement<Item> implements SmllrElement {
 
       this._cache = newCache;
 
-      this.app.remove(toRemove);
-      this.app.insert(toMove);
-      this.app.toDom(toInsert);
-      this.app.insert(toInsert);
+      removeElements(toRemove);
+      insertElements(toMove);
+      createDomNodes(toInsert);
+      insertElements(toInsert);
     }
   }
 
   toDom(): Node | Node[] {
-    const eff = new ValueEffect(
-      this._getArr,
-      () => {
-        this.patch();
-      },
-      this.app.ctx
-    );
+    this.array.subscribe(() => {
+      this.patch();
+    });
 
-    this.create(eff.value);
-    return this.app.toDom(this.children);
+    this.create();
+    return createDomNodes(this.children);
   }
 
   toHtml(): string {
-    this.create(this._getArr());
-    return this.app.toHtml(this.children);
+    this.create();
+    return createHtmlString(this.children);
   }
 }
 
@@ -181,9 +182,9 @@ type CacheKey<Item> = string | number | Item;
 type GetItemKeyFn<Item> = (item: Item, index: number) => CacheKey<Item>;
 
 export const list = <Item>(
-  getArr: () => Item[],
+  array: Reactive<Item[]>,
   renderItem: RenderItemFn<Item>,
   getItemKey?: GetItemKeyFn<Item>
 ) => {
-  return new ListElement({ getArr, renderItem, getItemKey });
+  return new ListElement({ array, renderItem, getItemKey });
 };

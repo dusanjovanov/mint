@@ -1,29 +1,25 @@
-import { ReactiveContext } from "./ReactiveContext";
-import { Sub, Subs } from "./types";
+import { REACTIVE_BRAND, STATE_TYPE } from "../constants";
+import { Sub } from "./types";
 
 export class State<Value> {
-  constructor(initialValue: Value, ctx: ReactiveContext) {
+  constructor(initialValue: Value) {
     this._value = initialValue;
-    this._ctx = ctx;
   }
+  brand = REACTIVE_BRAND;
+  type = STATE_TYPE;
   _value;
-  _ctx;
-  _subs: Subs = new Set();
+  _subs = new Set<Sub>();
 
   get value() {
-    this._ctx.track(this);
     return this._value;
   }
 
-  set value(newValue: Value) {
-    const prevValue = this._value;
-    this._value = newValue;
-    if (prevValue !== this._value) {
-      this._subs.forEach((s) => s._notify());
-    }
+  set value(value: Value) {
+    this._value = value;
+    this._subs.forEach((s) => s());
   }
 
-  _subscribe(sub: Sub) {
+  subscribe(sub: Sub) {
     this._subs.add(sub);
     return () => {
       this._subs.delete(sub);

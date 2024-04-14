@@ -11,6 +11,7 @@ export type DomSubmitEventHandler<T> = DomEventHandler<T, SubmitEvent>;
 
 export type DomEventProps<T> = {
   onClick?: DomMouseEventHandler<T>;
+  onDoubleClick?: DomMouseEventHandler<T>;
   onMouseDown?: DomMouseEventHandler<T>;
   onMouseUp?: DomMouseEventHandler<T>;
   onMouseMove?: DomMouseEventHandler<T>;

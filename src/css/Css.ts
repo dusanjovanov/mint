@@ -1,3 +1,5 @@
+import { CssProp } from "../types";
+import { entries } from "../utils";
 import { cssPropToObject } from "./cssPropToObject";
 import { getFinishedRules } from "./getFinishedRules";
 import { getRuleFromCssObject } from "./getRuleFromCssObject";
@@ -67,6 +69,20 @@ export class Css {
     });
 
     return className;
+  }
+
+  getGlobalCssRules(cssProp: CssProp) {
+    const cssObject = cssPropToObject(cssProp);
+
+    const rules = entries(cssObject).map(([key, value]) => {
+      return getRuleFromCssObject(value, key, this.options);
+    });
+
+    const finishedRules = getFinishedRules("", rules);
+
+    return finishedRules.map((rule) => {
+      return `${rule.selector}{${rule.css}}`;
+    });
   }
 }
 

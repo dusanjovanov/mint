@@ -1,6 +1,5 @@
-import { getPropValue } from "..";
 import { CssProp } from "../types";
-import { mergeDeep } from "../utils";
+import { getPropValue, mergeDeep } from "../utils";
 
 export const cssPropToObject = (cssProp: CssProp) => {
   const value = getPropValue(cssProp);

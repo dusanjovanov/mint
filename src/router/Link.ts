@@ -1,32 +1,32 @@
 import { component } from "../component";
 import { htm } from "../html";
-import { HTMLAnchorElementProps, ReactiveProp, SmllrNode } from "../types";
+import { HtmlProps, ReactiveProp } from "../types";
 import { getPropValue } from "../utils";
-import { getRouterContext } from "./RouterProvider";
+import { getRouter } from "./RouterProvider";
 import { NavigateOptions } from "./types";
 
 export type LinkProps = {
-  node: SmllrNode;
   path: ReactiveProp<string>;
 } & NavigateOptions &
-  HTMLAnchorElementProps;
+  HtmlProps<"a">;
 
 export const Link = component<LinkProps>(
-  ($, { node, path, replace, state, ...anchorProps }) => {
-    const router = getRouterContext($);
+  ($, { path, replace, state, children, ...anchorProps }) => {
+    const router = getRouter($);
 
-    return htm(
-      "a",
-      {
-        ...anchorProps,
+    return htm("a", {
+      ...anchorProps,
+      attrs: {
         href: path,
-        onClick: (e) => {
+      },
+      on: {
+        click: (e) => {
           e.preventDefault();
           router.navigate(getPropValue(path), { replace, state });
-          anchorProps.onClick?.(e);
+          anchorProps.on?.click?.(e);
         },
       },
-      node
-    );
+      children,
+    });
   }
 );

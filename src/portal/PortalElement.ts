@@ -1,5 +1,10 @@
-import { App } from "../App";
-import { SMLLR_EL_BRAND, SMLLR_EL_TYPES } from "../constants";
+import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
+import { createDomNodes } from "../createDomNodes";
+import { getFirstNode } from "../getFirstDomNode";
+import { getNodes } from "../getNodes";
+import { onInsert } from "../onInsert";
+import { removeElements } from "../removeElements";
+import { resolveNode } from "../resolveNode";
 import { SmllrElement, SmllrNode } from "../types";
 
 export class PortalElement implements SmllrElement {
@@ -7,12 +12,11 @@ export class PortalElement implements SmllrElement {
     this._target = target;
     this.node = node;
   }
-  brand = SMLLR_EL_BRAND;
-  type = SMLLR_EL_TYPES.portal;
+  brand = ELEMENT_BRAND;
+  type = ELEMENT_TYPES.portal;
   children: SmllrElement[] = [];
   parent!: SmllrElement;
   index!: number;
-  app!: App;
   isInserted = false;
   _target;
   node;
@@ -21,31 +25,31 @@ export class PortalElement implements SmllrElement {
     return this._target ?? document.body;
   }
 
-  getNodes(): Node[] {
-    return this.app.getNodes(this.children);
+  getNodes() {
+    return getNodes(this.children);
   }
 
-  getFirstNode(): Node | undefined {
-    return this.app.getFirstNode(this.children);
+  getFirstNode() {
+    return getFirstNode(this.children);
   }
 
   onInsert(): void {
     this.isInserted = true;
-    this.app.onInsert(this.children);
+    onInsert(this.children);
   }
 
   remove(): void {
-    this.app.remove(this.children);
+    removeElements(this.children);
     this.isInserted = false;
   }
 
   create() {
-    this.children = this.app.createElements({ node: this.node, parent: this });
+    this.children = resolveNode(this.node, this);
   }
 
   toDom(): Node | Node[] {
     this.create();
-    this.target.append(...this.app.toDom(this.children));
+    this.target.append(...createDomNodes(this.children));
     return [];
   }
 

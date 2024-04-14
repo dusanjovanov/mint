@@ -1,4 +1,8 @@
 export const getSelector = (classSelector: string, key: string) => {
+  if (classSelector === "") {
+    return key;
+  }
+
   if (key.indexOf("&") === 0) {
     return key.replace(/&/g, classSelector);
   }

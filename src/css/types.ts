@@ -16,7 +16,7 @@ export type CssOptions = {
 };
 
 export type GetTokenValueFn = (args: {
-  key: string;
+  property: string;
   value: string;
   tokenName: string;
 }) => string | number;

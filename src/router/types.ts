@@ -1,3 +1,5 @@
+import { History } from "history";
+
 export type RouterLocation = {
   url: URL;
   state?: any;
@@ -5,6 +7,7 @@ export type RouterLocation = {
 
 export type RouterOptions = {
   routes: RouteConfig[];
+  history: History;
 };
 
 export type RouteConfig = {

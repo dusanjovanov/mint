@@ -1,49 +1,47 @@
-import { App } from "../App";
-import { SMLLR_EL_BRAND, SMLLR_EL_TYPES, SVG_MAP } from "../constants";
-import { addPxIfNeeded } from "../css";
-import { ValueEffect } from "../reactive";
-import { DataSet, SmllrElement, SmllrNode, UseRemoveFn } from "../types";
 import {
+  ELEMENT_BRAND,
+  ELEMENT_TYPES,
+  UPPERCASE_LETTER_REGX,
+} from "../constants";
+import { createDomNodes } from "../createDomNodes";
+import { createHtmlString } from "../createHtmlString";
+import { CSS_PROVIDER_KEY, Css } from "../css";
+import { getContext } from "../getContext";
+import { onInsert } from "../onInsert";
+import { UnsubscribeFn } from "../reactive";
+import { resolveNode } from "../resolveNode";
+import { CssProperties, DataSet, HtmlProps, SmllrElement } from "../types";
+import {
+  addPxIfNeeded,
   camelToKebab,
   entries,
-  getEventTypeFromPropKey,
-  isEventProp,
-  isFunction,
+  getPropValue,
+  getReactiveValue,
+  isReactive,
 } from "../utils";
-import { ATTRIBUTE_ALIASES, PROP_MAP } from "./constants";
-import { AllHtmlPropMap, AllHtmlTags } from "./types";
 
 export class HtmlElement implements SmllrElement {
-  constructor({
-    tag,
-    props,
-    nodes,
-  }: {
-    tag: string;
-    props: any;
-    nodes: SmllrNode[];
-  }) {
+  constructor(tag: string, props: any) {
     this.tag = tag;
     this.props = props ?? {};
-    this.nodes = nodes;
-    this.isSvg = tag in SVG_MAP;
   }
-  brand = SMLLR_EL_BRAND;
-  type = SMLLR_EL_TYPES.html;
   tag;
   props;
-  nodes;
-  children: SmllrElement[] = [];
-  isSvg;
-  domNode: HTMLElement | SVGElement | undefined;
-  app!: App;
-  cssClasses: string[] = [];
+  brand = ELEMENT_BRAND;
+  type = ELEMENT_TYPES.html;
+  domNode: HTMLElement | undefined;
   parent!: SmllrElement;
   index!: number;
-  effs = new Set<ValueEffect<any>>();
+  children: SmllrElement[] = [];
+  cssClass?: string;
+  prevStyle: CssProperties | undefined;
   prevData: DataSet | undefined;
-  prevStyle: any;
-  destroyUse: UseRemoveFn | undefined;
+  unsubs: UnsubscribeFn[] = [];
+  css!: Css;
+
+  get isInserted() {
+    return !!this.domNode?.isConnected;
+  }
 
   getNodes() {
     return this.domNode ? [this.domNode] : [];
@@ -53,59 +51,20 @@ export class HtmlElement implements SmllrElement {
     return this.domNode;
   }
 
-  get isInserted() {
-    return !!this.domNode?.isConnected;
-  }
-
-  create() {
-    this.children = this.app.createElements({
-      parent: this,
-      node: this.nodes,
+  setStyle(styleObj: any) {
+    // remove no longer present keys
+    if (this.prevStyle) {
+      Object.keys(this.prevStyle).forEach((key) => {
+        if (!(key in styleObj)) {
+          this.domNode!.style[key as any] = "";
+        }
+      });
+    }
+    this.prevStyle = styleObj;
+    // current keys
+    entries(styleObj).forEach(([key, value]) => {
+      this.domNode!.style[key as any] = addPxIfNeeded(key, value);
     });
-  }
-
-  onInsert() {
-    if (this.props.use) {
-      this.destroyUse = this.props.use(this.domNode);
-    }
-    this.app.onInsert(this.children);
-  }
-
-  setProp(key: string, value: any) {
-    if (!this.domNode) return;
-
-    if (key === "use") return;
-
-    if (isEventProp(key)) {
-      this.domNode.addEventListener(getEventTypeFromPropKey(key), value);
-    }
-    //
-    else if (key === "style") {
-      this.setStyle(value);
-    }
-    //
-    else if (key === "css") {
-      this.setCssClasses(value);
-    }
-    //
-    else if (key === "data") {
-      this.setDataAttr(value);
-    }
-    //
-    else if (PROP_MAP[key]) {
-      // @ts-expect-error
-      this.domNode[key] = value;
-    }
-    //
-    else {
-      this.domNode.setAttribute(ATTRIBUTE_ALIASES[key] ?? key, value);
-    }
-  }
-
-  setCssClasses(value: any) {
-    const className = this.app.css.getScopedCssClass(value);
-
-    this.domNode!.classList.add(className);
   }
 
   setDataAttr(dataSet: DataSet) {
@@ -128,82 +87,98 @@ export class HtmlElement implements SmllrElement {
     });
   }
 
-  setStyle(styleObj: any) {
-    // remove no longer present keys
-    if (this.prevStyle) {
-      Object.keys(this.prevStyle).forEach((key) => {
-        if (!(key in styleObj)) {
-          this.domNode!.style[key as any] = "";
-        }
-      });
+  setCssClass(value: any) {
+    const className = this.css.getScopedCssClass(value);
+
+    if (this.cssClass != null && this.cssClass !== className) {
+      this.domNode!.classList.remove(this.cssClass);
     }
-    this.prevStyle = styleObj;
-    // current keys
-    entries(styleObj).forEach(([key, value]) => {
-      this.domNode!.style[key as any] = addPxIfNeeded(key, value);
-    });
+    this.cssClass = className;
+
+    this.domNode!.classList.add(className);
+  }
+
+  setProp(key: string, value: any) {
+    if (!this.domNode) return;
+
+    if (key === "style") {
+      this.setStyle(value);
+    }
+    //
+    else if (key === "css") {
+      this.setCssClass(value);
+    }
+    //
+    else if (key === "innerHtml") {
+      this.domNode.innerHTML = value;
+    }
+  }
+
+  create() {
+    this.css = getContext(CSS_PROVIDER_KEY, this);
+    this.children = resolveNode(this.props.children, this);
   }
 
   toDom() {
     this.create();
 
-    const dom = this.isSvg
-      ? document.createElementNS("http://www.w3.org/2000/svg", this.tag)
-      : document.createElement(this.tag);
-    this.domNode = dom;
+    this.domNode = document.createElement(this.tag);
 
-    dom.append(...this.app.toDom(this.children));
+    this.domNode.append(...createDomNodes(this.children));
 
     entries(this.props).forEach(([key, value]) => {
-      let v = this.props[key];
+      if (key === "ref") return;
 
-      if (!isEventProp(key) && key !== "use" && isFunction(value)) {
-        const eff = new ValueEffect(
-          value,
-          () => {
-            this.setProp(key, eff.value);
-          },
-          this.app.ctx
+      if (this.props.on) {
+        entries(this.props.on).forEach(([type, handler]) => {
+          this.domNode!.addEventListener(type as any, handler as any);
+        });
+      }
+
+      if (this.props.attrs) {
+        entries(this.props.attrs).forEach(([key, value]) => {
+          this.domNode!.setAttribute(key, getReactiveValue(value));
+          if (isReactive(value)) {
+            this.unsubs.push(
+              value.subscribe(() => {
+                this.domNode!.setAttribute(key, getReactiveValue(value));
+              })
+            );
+          }
+        });
+      }
+
+      if (this.props.props) {
+        entries(this.props.attrs).forEach(([key, value]) => {
+          (this.domNode as any)![key] = getReactiveValue(value);
+          if (isReactive(value)) {
+            this.unsubs.push(
+              value.subscribe(() => {
+                (this.domNode as any)![key] = getReactiveValue(value);
+              })
+            );
+          }
+        });
+      }
+
+      const v = getPropValue(value);
+
+      if (isReactive(value)) {
+        this.unsubs.push(
+          value.subscribe(() => {
+            this.setProp(key, value.value);
+          })
         );
-        this.effs.add(eff);
-        v = eff.value;
       }
 
       this.setProp(key, v);
     });
 
-    return dom;
-  }
-
-  remove(): void {
-    this.effs.forEach((eff) => eff._dispose());
-    this.effs.clear();
-    this.domNode?.remove();
-    this.domNode = undefined;
-    this.app.remove(this.children);
-    this.children.length = 0;
-    this.destroyUse?.();
-  }
-
-  _styleObjToString(obj: any) {
-    const keys = Object.keys(obj);
-    let s = "";
-
-    for (const key of keys) {
-      let v = obj[key];
-
-      if (v == null) {
-        continue;
-      }
-
-      s += `${camelToKebab(key)}:${addPxIfNeeded(key, v)};`;
-    }
-    return s;
+    return this.domNode;
   }
 
   toHtml(): string {
     this.create();
-
     let s = `<${this.tag}`;
 
     const propsStrings: string[] = [];
@@ -217,19 +192,26 @@ export class HtmlElement implements SmllrElement {
 
       let v = value;
 
-      if (isFunction(v)) {
-        v = v();
+      if (isReactive(v)) {
+        v = v.value;
       }
 
       if (key === "css") {
-        const cls = this.app.css.getScopedCssClass(v);
+        const cls = this.css.getScopedCssClass(v);
         propsStrings.push(`class="${cls}"`);
       }
       //
+      else if (key === "style") {
+        propsStrings.push(`style="${styleObjToString(v)}"`);
+      }
+      //
+      else if (key === "data") {
+        entries(value).forEach(([k, v]) => {
+          propsStrings.push(`data-${camelToKebab(k)}="${v}"`);
+        });
+      }
+      //
       else {
-        if (key === "style") {
-          v = this._styleObjToString(v);
-        }
         propsStrings.push(`${keyAlias ?? key}="${v}"`);
       }
     }
@@ -239,7 +221,7 @@ export class HtmlElement implements SmllrElement {
     }
 
     if (this.children.length > 0) {
-      const childrenString = this.app.toHtml(this.children);
+      const childrenString = createHtmlString(this.children);
       s += `>${childrenString}</${this.tag}>`;
     }
     //
@@ -249,12 +231,60 @@ export class HtmlElement implements SmllrElement {
 
     return s;
   }
+
+  callRef(el: HTMLElement | null) {
+    if (!this.props.ref) return;
+    this.props.ref(el);
+  }
+
+  onInsert() {
+    onInsert(this.children);
+    this.callRef(this.domNode!);
+  }
+
+  remove() {
+    this.unsubs.forEach((u) => u());
+    this.domNode?.remove();
+    this.domNode = undefined;
+    this.callRef(null);
+  }
 }
 
-export const htm = <Tag extends AllHtmlTags>(
-  tag: Tag,
-  props: AllHtmlPropMap[Tag] | null,
-  ...nodes: SmllrNode[]
-) => {
-  return new HtmlElement({ tag, props, nodes });
+const isEventProp = (propKey: string) =>
+  propKey !== "on" &&
+  propKey.indexOf("on") === 0 &&
+  UPPERCASE_LETTER_REGX.test(propKey[2]);
+
+// html props treated as element properties ( not attributes )
+export const PROP_MAP: Record<string, true> = {
+  checked: true,
+  selected: true,
+  type: true,
+  value: true,
 };
+
+export const ATTRIBUTE_ALIASES: Record<string, string> = {
+  className: "class",
+  htmlFor: "for",
+};
+
+const styleObjToString = (obj: any) => {
+  const keys = Object.keys(obj);
+  let s = "";
+
+  for (const key of keys) {
+    let v = obj[key];
+
+    if (v == null) {
+      continue;
+    }
+
+    s += `${camelToKebab(key)}:${addPxIfNeeded(key, v)};`;
+  }
+  return s;
+};
+
+export const htm = <Tag extends keyof HTMLElementTagNameMap>(
+  tag: Tag,
+  props: HtmlProps<Tag>
+) => new HtmlElement(tag, props);
