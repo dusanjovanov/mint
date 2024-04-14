@@ -3,20 +3,20 @@ import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
 import { createDomNodes } from "../createDomNodes";
 import { getContext } from "../getContext";
 import { resolveNode } from "../resolveNode";
-import { SmllrElement, SmllrNode } from "../types";
+import { SmlrElement, SmlrNode } from "../types";
 import { Head } from "./Head";
 
-export class HeadElement implements SmllrElement {
-  constructor(nodes: SmllrNode[]) {
+export class HeadElement implements SmlrElement {
+  constructor(nodes: SmlrNode[]) {
     this.nodes = nodes;
   }
   brand = ELEMENT_BRAND;
   type = ELEMENT_TYPES.head;
-  parent!: SmllrElement;
+  parent!: SmlrElement;
   index!: number;
   isInserted = false;
   nodes;
-  children: SmllrElement[] = [];
+  children: SmlrElement[] = [];
   head!: Head;
 
   getNodes() {
@@ -55,4 +55,4 @@ export class HeadElement implements SmllrElement {
   }
 }
 
-export const head = (...nodes: SmllrNode[]) => new HeadElement(nodes);
+export const head = (...nodes: SmlrNode[]) => new HeadElement(nodes);

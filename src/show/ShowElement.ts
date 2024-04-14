@@ -8,21 +8,21 @@ import { onInsert } from "../onInsert";
 import { Reactive, UnsubscribeFn } from "../reactive";
 import { removeElements } from "../removeElements";
 import { resolveNode } from "../resolveNode";
-import { DomNode, SmllrElement, SmllrNode } from "../types";
+import { DomNode, SmlrElement, SmlrNode } from "../types";
 
-export class ShowElement implements SmllrElement {
-  constructor(condition: Reactive, positive: SmllrNode, negative?: SmllrNode) {
+export class ShowElement implements SmlrElement {
+  constructor(condition: Reactive, positive: SmlrNode, negative?: SmlrNode) {
     this.condition = condition;
     this.positiveNode = positive;
     this.negativeNode = negative;
   }
   brand = ELEMENT_BRAND;
   type = ELEMENT_TYPES.show;
-  parent!: SmllrElement;
+  parent!: SmlrElement;
   index!: number;
-  positive: SmllrElement[] = [];
-  negative: SmllrElement[] = [];
-  children: SmllrElement[] = [];
+  positive: SmlrElement[] = [];
+  negative: SmlrElement[] = [];
+  children: SmlrElement[] = [];
   isInserted = false;
   prevCondition: boolean | undefined;
   condition;
@@ -103,8 +103,8 @@ export class ShowElement implements SmllrElement {
 
 export const show = (
   condition: Reactive,
-  positive: SmllrNode,
-  negative?: SmllrNode
+  positive: SmlrNode,
+  negative?: SmlrNode
 ) => {
   return new ShowElement(condition, positive, negative);
 };

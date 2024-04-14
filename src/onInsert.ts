@@ -1,5 +1,5 @@
-import { SmllrElement } from "./types";
+import { SmlrElement } from "./types";
 
-export const onInsert = (elements: SmllrElement[]) => {
+export const onInsert = (elements: SmlrElement[]) => {
   elements.forEach((el) => el.onInsert());
 };

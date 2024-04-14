@@ -1,6 +1,6 @@
-<img src="https://github.com/dusanjovanov/smllr/blob/main/logo.png?raw=true" width="300" />
+<img src="https://github.com/dusanjovanov/smlr/blob/main/logo.png?raw=true" width="300" />
 
-[![npm version](https://badge.fury.io/js/smllr.svg)](https://www.npmjs.com/package/smllr)
+[![npm version](https://badge.fury.io/js/smlr.svg)](https://www.npmjs.com/package/smlr)
 
 Frontend framework
 

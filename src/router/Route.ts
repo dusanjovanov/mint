@@ -1,11 +1,11 @@
 import { getApp } from "../AppProvider";
 import { component } from "../component";
 import { show } from "../show";
-import { SmllrNode } from "../types";
+import { SmlrNode } from "../types";
 
 type RouteProps = {
   key: string;
-  children: SmllrNode;
+  children: SmlrNode;
 };
 
 export const Route = component<RouteProps>(($, { key, children }) => {

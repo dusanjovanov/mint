@@ -3,10 +3,10 @@ import { findNextNode } from "./findNextNode";
 import { HtmlElement } from "./html";
 import { onInsert } from "./onInsert";
 import { PortalElement } from "./portal";
-import { SmllrElement } from "./types";
+import { SmlrElement } from "./types";
 import { isElementOfType } from "./utils";
 
-export const insertElements = (elements: SmllrElement[]) => {
+export const insertElements = (elements: SmlrElement[]) => {
   for (const el of elements) {
     const boundary = findAncestorElement(
       el,

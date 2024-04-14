@@ -1,5 +1,5 @@
-import { SmllrElement } from "./types";
+import { SmlrElement } from "./types";
 
-export const removeElements = (elements: SmllrElement[]) => {
+export const removeElements = (elements: SmlrElement[]) => {
   elements.forEach((el) => el.remove());
 };

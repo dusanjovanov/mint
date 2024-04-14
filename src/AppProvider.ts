@@ -2,11 +2,11 @@ import { component } from "./component";
 import { Css } from "./css";
 import { Head } from "./head";
 import { Router } from "./router";
-import { SmllrNode } from "./types";
+import { SmlrNode } from "./types";
 import { createContext } from "./utils";
 
 type AppProviderProps = AppContextProps & {
-  children: SmllrNode;
+  children: SmlrNode;
 };
 
 type AppContextProps = {

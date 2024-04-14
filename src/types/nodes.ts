@@ -8,19 +8,19 @@ export type TextNode = string | number;
 
 export type EmptyNode = boolean | null | undefined;
 
-export type SmllrNode =
+export type SmlrNode =
   | EmptyNode
   | TextNode
   | Reactive
-  | SmllrElement
-  | SmllrNode[];
+  | SmlrElement
+  | SmlrNode[];
 
-export type SmllrElement = {
+export type SmlrElement = {
   brand: symbol;
   type: symbol;
-  parent: SmllrElement;
+  parent: SmlrElement;
   index: number;
-  children?: SmllrElement[];
+  children?: SmlrElement[];
   isInserted: boolean;
   getFirstNode(): DomNode | undefined;
   getNodes(): DomNode[];
@@ -45,7 +45,7 @@ export type HtmlProps<Tag extends keyof HTMLElementTagNameMap> = {
   attrs?: Record<string, any>;
   /** Set directly on the element `el[key] = value` */
   props?: Record<string, any>;
-  children?: SmllrNode;
+  children?: SmlrNode;
   show?: Reactive<any>;
   style?: ReactiveProp<CssProperties>;
   css?: ReactiveProp<CssProp>;

@@ -4,9 +4,9 @@ import { Css } from "./css";
 import { Head } from "./head";
 import { resolveNode } from "./resolveNode";
 import { Router, RouterOptions, createMemoryHistory } from "./router";
-import { SmllrElement, SmllrNode } from "./types";
+import { SmlrElement, SmlrNode } from "./types";
 
-export const ssr = (node: SmllrNode, options: SsrOptions) => {
+export const ssr = (node: SmlrNode, options: SsrOptions) => {
   const router = new Router({
     history: createMemoryHistory({
       initialEntries: options.pathname ? [options.pathname] : ["/"],
@@ -23,7 +23,7 @@ export const ssr = (node: SmllrNode, options: SsrOptions) => {
       head,
       children: node,
     }),
-    {} as SmllrElement
+    {} as SmlrElement
   );
 
   let bodyHtml = createHtmlString(elements);

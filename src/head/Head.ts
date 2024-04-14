@@ -1,6 +1,6 @@
 import { createHtmlString } from "../createHtmlString";
 import { getNodes } from "../getNodes";
-import { SmllrElement } from "../types";
+import { SmlrElement } from "../types";
 
 export class Head {
   constructor(isSsr = false) {
@@ -10,7 +10,7 @@ export class Head {
   html = "";
   css = "";
 
-  insert(elements: SmllrElement[]) {
+  insert(elements: SmlrElement[]) {
     if (this.isSsr) {
       this.html += createHtmlString(elements);
     }

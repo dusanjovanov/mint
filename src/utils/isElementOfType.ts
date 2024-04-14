@@ -6,10 +6,10 @@ import { ListElement } from "../list";
 import { PortalElement } from "../portal";
 import { ShowElement } from "../show";
 import { TextElement } from "../text";
-import { SmllrElement } from "../types";
+import { SmlrElement } from "../types";
 
 export const isElementOfType = <Key extends keyof TypeMap>(
-  el: SmllrElement,
+  el: SmlrElement,
   type: Key
 ): el is TypeMap[Key] => {
   return el.type === ELEMENT_TYPES[type];

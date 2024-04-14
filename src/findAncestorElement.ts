@@ -1,8 +1,8 @@
-import { SmllrElement } from "./types";
+import { SmlrElement } from "./types";
 
 export const findAncestorElement = (
-  el: SmllrElement,
-  condition: (current: SmllrElement) => boolean
+  el: SmlrElement,
+  condition: (current: SmlrElement) => boolean
 ) => {
   let current = el.parent;
 

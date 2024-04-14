@@ -1,22 +1,22 @@
 import { TextElement } from "./text";
-import { SmllrElement, SmllrNode } from "./types";
+import { SmlrElement, SmlrNode } from "./types";
 import { isMintElement, isReactive, isTextNode } from "./utils";
 
 export const resolveNode = (
-  node: SmllrNode,
-  parent: SmllrElement,
+  node: SmlrNode,
+  parent: SmlrElement,
   startIndex = 0
 ) => {
   const flatNodes = Array.isArray(node) ? node.flat(Infinity as 1) : [node];
 
-  const elements: SmllrElement[] = [];
+  const elements: SmlrElement[] = [];
 
   const len = flatNodes.length;
 
   for (let i = 0; i < len; i++) {
     const n = flatNodes[i];
 
-    let el: SmllrElement;
+    let el: SmlrElement;
 
     if (isTextNode(n)) {
       el = new TextElement(n);

@@ -1,8 +1,8 @@
-import { DomNode, SmllrElement } from "./types";
+import { DomNode, SmlrElement } from "./types";
 
 export const findNextNode = (
-  el: SmllrElement,
-  boundary: SmllrElement
+  el: SmlrElement,
+  boundary: SmlrElement
 ): DomNode | undefined => {
   let nextEl = getNextEl(el);
 
@@ -21,4 +21,4 @@ export const findNextNode = (
   }
 };
 
-const getNextEl = (el: SmllrElement) => el.parent.children?.[el.index + 1];
+const getNextEl = (el: SmlrElement) => el.parent.children?.[el.index + 1];

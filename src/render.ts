@@ -6,10 +6,10 @@ import { HtmlElement } from "./html";
 import { onInsert } from "./onInsert";
 import { resolveNode } from "./resolveNode";
 import { Router, RouterOptions, createBrowserHistory } from "./router";
-import { SmllrNode } from "./types";
+import { SmlrNode } from "./types";
 
 export const render = (
-  node: SmllrNode,
+  node: SmlrNode,
   container: HTMLElement,
   options: RenderOptions
 ) => {

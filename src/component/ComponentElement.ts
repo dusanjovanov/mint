@@ -7,10 +7,10 @@ import { onInsert } from "../onInsert";
 import { SubReactive } from "../reactive";
 import { removeElements } from "../removeElements";
 import { resolveNode } from "../resolveNode";
-import { SmllrElement, SmllrNode } from "../types";
+import { SmlrElement, SmlrNode } from "../types";
 import { ComponentApi } from "./ComponentApi";
 
-export class ComponentElement<Props> implements SmllrElement {
+export class ComponentElement<Props> implements SmlrElement {
   constructor({
     render,
     props,
@@ -25,10 +25,10 @@ export class ComponentElement<Props> implements SmllrElement {
   type = ELEMENT_TYPES.component;
   render;
   props;
-  parent!: SmllrElement;
+  parent!: SmlrElement;
   index!: number;
   isInserted = false;
-  children: SmllrElement[] = [];
+  children: SmlrElement[] = [];
   context = new Map();
   onInsertCbs: LifecycleCallback[] = [];
   onRemoveCbs: LifecycleCallback[] = [];
@@ -86,6 +86,6 @@ export const component =
 export type ComponentRenderFn<Props> = (
   api: ComponentApi,
   props: Props
-) => SmllrNode;
+) => SmlrNode;
 
 export type LifecycleCallback = () => void;

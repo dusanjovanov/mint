@@ -1,9 +1,9 @@
 import { ComponentElement } from "./component";
 import { findAncestorElement } from "./findAncestorElement";
-import { SmllrElement } from "./types";
+import { SmlrElement } from "./types";
 import { isElementOfType } from "./utils";
 
-export const getContext = <Value>(key: any, startElement: SmllrElement) => {
+export const getContext = <Value>(key: any, startElement: SmlrElement) => {
   const compnentElWithContext = findAncestorElement(
     startElement,
     (current) =>

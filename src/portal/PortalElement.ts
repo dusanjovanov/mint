@@ -5,17 +5,17 @@ import { getNodes } from "../getNodes";
 import { onInsert } from "../onInsert";
 import { removeElements } from "../removeElements";
 import { resolveNode } from "../resolveNode";
-import { SmllrElement, SmllrNode } from "../types";
+import { SmlrElement, SmlrNode } from "../types";
 
-export class PortalElement implements SmllrElement {
-  constructor({ target, node }: PortalProps & { node: SmllrNode }) {
+export class PortalElement implements SmlrElement {
+  constructor({ target, node }: PortalProps & { node: SmlrNode }) {
     this._target = target;
     this.node = node;
   }
   brand = ELEMENT_BRAND;
   type = ELEMENT_TYPES.portal;
-  children: SmllrElement[] = [];
-  parent!: SmllrElement;
+  children: SmlrElement[] = [];
+  parent!: SmlrElement;
   index!: number;
   isInserted = false;
   _target;
@@ -63,6 +63,6 @@ type PortalProps = {
   target?: Element;
 };
 
-export const portal = (props: PortalProps | null, ...nodes: SmllrNode[]) => {
+export const portal = (props: PortalProps | null, ...nodes: SmlrNode[]) => {
   return new PortalElement({ node: nodes, ...props });
 };

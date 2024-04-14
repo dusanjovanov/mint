@@ -1,15 +1,15 @@
-export const ELEMENT_BRAND = Symbol.for("smllr-el");
-export const REACTIVE_BRAND = Symbol.for("smllr-reactive");
-export const STATE_TYPE = Symbol.for("smllr-state");
+export const ELEMENT_BRAND = Symbol.for("smlr-el");
+export const REACTIVE_BRAND = Symbol.for("smlr-reactive");
+export const STATE_TYPE = Symbol.for("smlr-state");
 
 export const ELEMENT_TYPES = {
-  html: Symbol.for("smllr-html"),
-  text: Symbol.for("smllr-text"),
-  component: Symbol.for("smllr-component"),
-  show: Symbol.for("smllr-show"),
-  portal: Symbol.for("smllr-portal"),
-  list: Symbol.for("smllr-list"),
-  head: Symbol.for("smllr-head"),
+  html: Symbol.for("smlr-html"),
+  text: Symbol.for("smlr-text"),
+  component: Symbol.for("smlr-component"),
+  show: Symbol.for("smlr-show"),
+  portal: Symbol.for("smlr-portal"),
+  list: Symbol.for("smlr-list"),
+  head: Symbol.for("smlr-head"),
 };
 
 const UNITLESS_CSS_PROPS = [

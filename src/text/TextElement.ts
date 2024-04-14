@@ -1,16 +1,16 @@
 import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
 import { Reactive, UnsubscribeFn } from "../reactive";
-import { SmllrElement, ReactiveProp, TextNode } from "../types";
+import { SmlrElement, ReactiveProp, TextNode } from "../types";
 import { getPropValue, isReactive } from "../utils";
 
-export class TextElement implements SmllrElement {
+export class TextElement implements SmlrElement {
   constructor(text: ReactiveProp<TextNode>) {
     this.text = text;
   }
   brand = ELEMENT_BRAND;
   type = ELEMENT_TYPES.text;
   text;
-  parent!: SmllrElement;
+  parent!: SmlrElement;
   index!: number;
   domNode: Text | undefined;
   unsub: UnsubscribeFn | undefined;

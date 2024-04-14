@@ -7,7 +7,7 @@ import { getContext } from "../getContext";
 import { onInsert } from "../onInsert";
 import { UnsubscribeFn } from "../reactive";
 import { resolveNode } from "../resolveNode";
-import { CssProperties, DataSet, HtmlProps, SmllrElement } from "../types";
+import { CssProperties, DataSet, HtmlProps, SmlrElement } from "../types";
 import {
   addPxIfNeeded,
   camelToKebab,
@@ -17,7 +17,7 @@ import {
   isReactive,
 } from "../utils";
 
-export class HtmlElement implements SmllrElement {
+export class HtmlElement implements SmlrElement {
   constructor(tag: string, props: any) {
     this.tag = tag;
     this.props = props ?? {};
@@ -27,9 +27,9 @@ export class HtmlElement implements SmllrElement {
   brand = ELEMENT_BRAND;
   type = ELEMENT_TYPES.html;
   domNode: HTMLElement | undefined;
-  parent!: SmllrElement;
+  parent!: SmlrElement;
   index!: number;
-  children: SmllrElement[] = [];
+  children: SmlrElement[] = [];
   cssClass?: string;
   prevStyle: CssProperties | undefined;
   prevData: DataSet | undefined;

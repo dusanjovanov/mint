@@ -22,7 +22,7 @@ export class Css {
 
   createStyleElement() {
     const el = document.createElement("style");
-    el.dataset.smllr = "";
+    el.dataset.smlr = "";
     return el;
   }
 
