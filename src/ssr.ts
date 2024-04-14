@@ -26,12 +26,17 @@ export const ssr = (node: SmllrNode, options: SsrOptions) => {
     {} as SmllrElement
   );
 
-  const bodyHtml = createHtmlString(elements);
+  let bodyHtml = createHtmlString(elements);
 
-  return `<head>${head.html}</head><body>${bodyHtml}</body>`;
+  if (options.clientBundlePath) {
+    bodyHtml += `<script src=${options.clientBundlePath}></script>`;
+  }
+
+  return `<head>${head.html}</head><body><div id="root">${bodyHtml}</div></body>`;
 };
 
 export type SsrOptions = {
   routes: RouterOptions["routes"];
   pathname?: string;
+  clientBundlePath?: string;
 };

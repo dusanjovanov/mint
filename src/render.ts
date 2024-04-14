@@ -13,6 +13,8 @@ export const render = (
   container: HTMLElement,
   options: RenderOptions
 ) => {
+  container.innerHTML = "";
+
   const containerEl = new HtmlElement(container.tagName, {});
   containerEl.domNode = container;
   containerEl.index = 0;
