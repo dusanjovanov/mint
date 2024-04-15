@@ -75,7 +75,7 @@ export class HtmlElement implements SmlrElement {
     this.domNode!.classList.add(className);
   }
 
-  setProp(key: string, value: any) {
+  setSpecialProp(key: string, value: any) {
     if (!this.domNode) return;
 
     if (key === "style") {
@@ -88,6 +88,16 @@ export class HtmlElement implements SmlrElement {
     //
     else if (key === "innerHtml") {
       this.domNode.innerHTML = value;
+    }
+  }
+
+  setProp(key: string, value: any) {
+    if (PROP_MAP[key]) {
+      (this.domNode as any)![key] = value;
+    }
+    //
+    else {
+      this.domNode!.setAttribute(key, value);
     }
   }
 
@@ -112,26 +122,13 @@ export class HtmlElement implements SmlrElement {
         });
       }
 
-      if (this.props.attrs) {
-        entries(this.props.attrs).forEach(([key, value]) => {
-          this.domNode!.setAttribute(key, getReactiveValue(value));
-          if (isReactive(value)) {
-            this.unsubs.push(
-              value.subscribe(() => {
-                this.domNode!.setAttribute(key, getReactiveValue(value));
-              })
-            );
-          }
-        });
-      }
-
       if (this.props.props) {
-        entries(this.props.attrs).forEach(([key, value]) => {
-          (this.domNode as any)![key] = getReactiveValue(value);
+        entries(this.props.props).forEach(([key, value]) => {
+          this.setProp(key, getReactiveValue(value));
           if (isReactive(value)) {
             this.unsubs.push(
               value.subscribe(() => {
-                (this.domNode as any)![key] = getReactiveValue(value);
+                this.setProp(key, getReactiveValue(value));
               })
             );
           }
@@ -143,12 +140,12 @@ export class HtmlElement implements SmlrElement {
       if (isReactive(value)) {
         this.unsubs.push(
           value.subscribe(() => {
-            this.setProp(key, value.value);
+            this.setSpecialProp(key, value.value);
           })
         );
       }
 
-      this.setProp(key, v);
+      this.setSpecialProp(key, v);
     });
 
     return this.domNode;

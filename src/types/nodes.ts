@@ -41,9 +41,6 @@ export type HtmlProps<Tag extends keyof HTMLElementTagNameMap> = {
       }
     ) => void;
   };
-  /** Set via `el.setAttribute` */
-  attrs?: Record<string, any>;
-  /** Set directly on the element `el[key] = value` */
   props?: Record<string, any>;
   children?: SmlrNode;
   show?: Reactive<any>;
