@@ -176,7 +176,7 @@ export class HtmlElement implements SmlrElement {
         );
       }
       //
-      else if (key === "attrs") {
+      else if (key === "props") {
         entries(value).forEach(([k, v]) => {
           const keyAlias = ATTRIBUTE_ALIASES[k];
 

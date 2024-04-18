@@ -16,7 +16,7 @@ export const Link = component<LinkProps>(
 
     return htm("a", {
       ...anchorProps,
-      attrs: {
+      props: {
         href: path,
       },
       on: {
