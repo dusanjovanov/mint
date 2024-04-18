@@ -1,5 +1,6 @@
 import { getApp } from "../AppProvider";
 import { component } from "../component";
+import { computed } from "../reactive";
 import { show } from "../show";
 import { SmlrNode } from "../types";
 
@@ -12,7 +13,7 @@ export const Route = component<RouteProps>(($, { key, children }) => {
   const { router } = getApp($);
 
   return show(
-    $.computed(() => {
+    computed(() => {
       const match = router.matches.value.get(key);
       return !!match;
     }),
