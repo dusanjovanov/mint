@@ -66,6 +66,10 @@ export class HtmlElement implements SmlrElement {
       this.setStyle(value);
     }
     //
+    else if (key === "cls") {
+      this.domNode.className = value;
+    }
+    //
     else if (key === "innerHtml") {
       this.domNode.innerHTML = value;
     }

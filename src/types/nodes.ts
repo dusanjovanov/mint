@@ -1,6 +1,5 @@
 import * as CSS from "csstype";
 import { Reactive } from "../reactive";
-import { CSSObject } from "./css";
 
 export type CssProperties = CSS.Properties<string | number>;
 
@@ -45,9 +44,9 @@ export type HtmlProps<Tag extends keyof HTMLElementTagNameMap> = {
   children?: SmlrNode;
   show?: Reactive<any>;
   style?: ReactiveProp<CssProperties>;
-  css?: ReactiveProp<CssProp>;
   innerHtml?: ReactiveProp<string>;
-  cls?: any;
+  /** Short for class, className */
+  cls?: string;
 };
 
 export type ReactiveProps<T> = {
@@ -57,7 +56,5 @@ export type ReactiveProps<T> = {
 export type ReactiveProp<T> = T | Reactive<T>;
 
 export type DataSet = Record<string, any>;
-
-export type CssProp = ReactiveProp<CSSObject | CSSObject[]>;
 
 export type Ref<E extends Element> = (el: E | null) => void;

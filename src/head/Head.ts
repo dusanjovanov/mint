@@ -8,7 +8,6 @@ export class Head {
   }
   isSsr;
   html = "";
-  css = "";
 
   insert(elements: SmlrElement[]) {
     if (this.isSsr) {
@@ -41,9 +40,5 @@ export class Head {
         }
       });
     }
-  }
-
-  insertRule(rule: string) {
-    this.css += rule;
   }
 }
