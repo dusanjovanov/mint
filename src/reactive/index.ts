@@ -1,4 +1,4 @@
-export * from "./computed2";
-export * from "./effect2";
+export * from "./computed";
+export * from "./effect";
 export * from "./signal";
 export * from "./types";
