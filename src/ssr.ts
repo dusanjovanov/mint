@@ -1,6 +1,5 @@
 import { AppProvider } from "./AppProvider";
 import { createHtmlString } from "./createHtmlString";
-import { Css } from "./css";
 import { Head } from "./head";
 import { resolveNode } from "./resolveNode";
 import { Router, RouterOptions, createMemoryHistory } from "./router";
@@ -18,7 +17,6 @@ export const ssr = (node: SmlrNode, options: SsrOptions) => {
 
   const elements = resolveNode(
     AppProvider({
-      css: new Css({ head, isSsr: true }),
       router,
       head,
       children: node,

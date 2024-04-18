@@ -1,9 +1,6 @@
-import { APP_PROVIDER_KEY } from "../AppProvider";
 import { ELEMENT_BRAND, ELEMENT_TYPES, VOID_TAGS_MAP } from "../constants";
 import { createDomNodes } from "../createDomNodes";
 import { createHtmlString } from "../createHtmlString";
-import { Css } from "../css";
-import { getContext } from "../getContext";
 import { onInsert } from "../onInsert";
 import { UnsubscribeFn, effect } from "../reactive";
 import { resolveNode } from "../resolveNode";
@@ -30,11 +27,9 @@ export class HtmlElement implements SmlrElement {
   parent!: SmlrElement;
   index!: number;
   children: SmlrElement[] = [];
-  cssClass?: string;
   prevStyle: CssProperties | undefined;
   prevData: DataSet | undefined;
   unsubs: UnsubscribeFn[] = [];
-  css!: Css;
 
   get isInserted() {
     return !!this.domNode?.isConnected;
@@ -64,26 +59,11 @@ export class HtmlElement implements SmlrElement {
     });
   }
 
-  setCssClass(value: any) {
-    const className = this.css.getScopedCssClass(value);
-
-    if (this.cssClass != null && this.cssClass !== className) {
-      this.domNode!.classList.remove(this.cssClass);
-    }
-    this.cssClass = className;
-
-    this.domNode!.classList.add(className);
-  }
-
   setSpecialProp(key: string, value: any) {
     if (!this.domNode) return;
 
     if (key === "style") {
       this.setStyle(value);
-    }
-    //
-    else if (key === "css") {
-      this.setCssClass(value);
     }
     //
     else if (key === "innerHtml") {
@@ -102,7 +82,6 @@ export class HtmlElement implements SmlrElement {
   }
 
   create() {
-    this.css = getContext<any>(APP_PROVIDER_KEY, this).css;
     this.children = resolveNode(this.props.children, this);
   }
 
@@ -156,12 +135,7 @@ export class HtmlElement implements SmlrElement {
 
       const value = this.props[key];
 
-      if (key === "css") {
-        const cls = this.css.getScopedCssClass(getReactiveValue(value));
-        propsStrings.push(`class="${cls}"`);
-      }
-      //
-      else if (key === "style") {
+      if (key === "style") {
         propsStrings.push(
           `style="${styleObjToString(getReactiveValue(value))}"`
         );

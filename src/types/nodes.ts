@@ -47,6 +47,7 @@ export type HtmlProps<Tag extends keyof HTMLElementTagNameMap> = {
   style?: ReactiveProp<CssProperties>;
   css?: ReactiveProp<CssProp>;
   innerHtml?: ReactiveProp<string>;
+  cls?: any;
 };
 
 export type ReactiveProps<T> = {

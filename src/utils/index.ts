@@ -1,7 +1,6 @@
 export * from "./addPxIfNeeded";
 export * from "./camelToKebab";
 export * from "./createContext";
-export * from "./createThemeVariables";
 export * from "./entries";
 export * from "./getPropValue";
 export * from "./getReactiveValue";

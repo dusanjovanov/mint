@@ -1,6 +1,5 @@
 import { AppProvider } from "./AppProvider";
 import { createDomNodes } from "./createDomNodes";
-import { Css } from "./css";
 import { Head } from "./head";
 import { HtmlElement } from "./html";
 import { onInsert } from "./onInsert";
@@ -28,7 +27,6 @@ export const render = (
 
   const elements = resolveNode(
     AppProvider({
-      css: new Css({ head }),
       router,
       head,
       children: node,

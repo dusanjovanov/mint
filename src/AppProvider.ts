@@ -1,5 +1,4 @@
 import { component } from "./component";
-import { Css } from "./css";
 import { Head } from "./head";
 import { Router } from "./router";
 import { SmlrNode } from "./types";
@@ -10,14 +9,13 @@ type AppProviderProps = AppContextProps & {
 };
 
 type AppContextProps = {
-  css: Css;
   router: Router;
   head: Head;
 };
 
 export const AppProvider = component<AppProviderProps>(
-  ($, { css, router, head, children }) => {
-    setApp($, { css, router, head });
+  ($, { router, head, children }) => {
+    setApp($, { router, head });
     return children;
   }
 );
