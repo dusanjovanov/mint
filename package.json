@@ -26,8 +26,7 @@
   "keywords": [
     "frontend",
     "ui",
-    "router",
-    "css-in-js"
+    "router"
   ],
   "author": "Dusan Jovanov",
   "license": "MIT",
