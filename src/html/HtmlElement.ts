@@ -5,7 +5,7 @@ import { createHtmlString } from "../createHtmlString";
 import { Css } from "../css";
 import { getContext } from "../getContext";
 import { onInsert } from "../onInsert";
-import { UnsubscribeFn } from "../reactive";
+import { UnsubscribeFn, effect } from "../reactive";
 import { resolveNode } from "../resolveNode";
 import { CssProperties, DataSet, HtmlProps, SmlrElement } from "../types";
 import {
@@ -124,25 +124,16 @@ export class HtmlElement implements SmlrElement {
 
       if (this.props.props) {
         entries(this.props.props).forEach(([key, value]) => {
-          this.setProp(key, getReactiveValue(value));
-          if (isReactive(value)) {
-            this.unsubs.push(
-              value.subscribe(() => {
-                this.setProp(key, getReactiveValue(value));
-              })
-            );
-          }
+          this.unsubs.push(
+            effect(() => this.setProp(key, getReactiveValue(value)))
+          );
         });
       }
 
       const v = getPropValue(value);
 
       if (isReactive(value)) {
-        this.unsubs.push(
-          value.subscribe(() => {
-            this.setSpecialProp(key, value.value);
-          })
-        );
+        this.unsubs.push(effect(() => this.setSpecialProp(key, value.value)));
       }
 
       this.setSpecialProp(key, v);

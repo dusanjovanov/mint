@@ -1,4 +1,4 @@
-import { State } from "../reactive";
+import { signal } from "../reactive";
 import {
   NavigateOptions,
   RouteMatch,
@@ -13,7 +13,7 @@ export class Router {
     this.history.listen(() => {
       this.matchRoutes();
     });
-    this.matches = new State(new Map() as RouterMatches);
+    this.matches = signal(new Map() as RouterMatches);
     this.matchRoutes();
   }
   matches;

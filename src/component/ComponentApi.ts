@@ -1,6 +1,5 @@
 import { getApp } from "../AppProvider";
 import { getContext } from "../getContext";
-import { Computed, Dep, Effect, EffectOptions, State } from "../reactive";
 import { ComponentElement, LifecycleCallback } from "./ComponentElement";
 
 export class ComponentApi {
@@ -8,21 +7,6 @@ export class ComponentApi {
     this.el = el;
   }
   el;
-
-  state<Value>(initialValue: Value) {
-    return new State(initialValue);
-  }
-
-  computed<Value>(deps: Dep[], compute: () => Value) {
-    const c = new Computed(deps, compute);
-    this.el.subReactives.add(c);
-    return c;
-  }
-
-  effect(deps: Dep[], run: () => void, options?: EffectOptions) {
-    const eff = new Effect(deps, run, { timing: "afterPaint", ...options });
-    this.el.subReactives.add(eff);
-  }
 
   setContext<Value>(key: any, value: Value) {
     this.el.context.set(key, value);

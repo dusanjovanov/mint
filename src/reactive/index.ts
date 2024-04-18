@@ -1,4 +1,4 @@
-export * from "./Computed";
-export * from "./Effect";
-export * from "./State";
+export * from "./computed2";
+export * from "./effect2";
+export * from "./signal";
 export * from "./types";

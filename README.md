@@ -8,11 +8,11 @@ Frontend framework
 > Work in progress - not ready for production 🚧
 
 ```ts
-import { render, component, htm } from "smlr";
+import { render, component, htm, signal, computed } from "smlr";
 
-const Counter = component(($) => {
-  const count = $.state(0);
-  const doubleCount = $.computed(() => count.value * 2);
+const Counter = component(() => {
+  const count = state(0);
+  const doubleCount = computed(() => count.value * 2);
 
   return [
     htm("div", { children: ["Count is: ", count] }),

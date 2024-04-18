@@ -12,7 +12,7 @@ export const Route = component<RouteProps>(($, { key, children }) => {
   const { router } = getApp($);
 
   return show(
-    $.computed([router.matches], () => {
+    $.computed(() => {
       const match = router.matches.value.get(key);
       return !!match;
     }),

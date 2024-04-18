@@ -1,6 +1,7 @@
 import { getApp } from "./AppProvider";
 import { component } from "./component";
 import { htm } from "./html";
+import { computed } from "./reactive";
 import { CssProp } from "./types";
 import { isReactive } from "./utils";
 
@@ -10,7 +11,7 @@ export const globalStyle = component<{ css: CssProp }>(($, { css }) => {
 
   return htm("style", {
     innerHtml: isReactive(css)
-      ? $.computed([css], () => getHtml(css.value))
+      ? computed(() => getHtml(css.value))
       : getHtml(css),
   });
 });

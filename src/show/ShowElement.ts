@@ -5,7 +5,7 @@ import { getFirstNode } from "../getFirstDomNode";
 import { getNodes } from "../getNodes";
 import { insertElements } from "../insertElements";
 import { onInsert } from "../onInsert";
-import { Reactive, UnsubscribeFn } from "../reactive";
+import { Reactive, UnsubscribeFn, effect } from "../reactive";
 import { removeElements } from "../removeElements";
 import { resolveNode } from "../resolveNode";
 import { DomNode, SmlrElement, SmlrNode } from "../types";
@@ -28,7 +28,7 @@ export class ShowElement implements SmlrElement {
   condition;
   positiveNode;
   negativeNode;
-  unsub: UnsubscribeFn | undefined;
+  dispose: UnsubscribeFn | undefined;
 
   getNodes() {
     return getNodes(this.children);
@@ -72,9 +72,7 @@ export class ShowElement implements SmlrElement {
     this.create();
     this.prevCondition = this.condition.value;
 
-    this.unsub = this.condition.subscribe(() => {
-      this.update();
-    });
+    this.dispose = effect(() => this.update());
 
     return createDomNodes(this.children);
   }
@@ -90,8 +88,8 @@ export class ShowElement implements SmlrElement {
   }
 
   remove() {
-    this.unsub?.();
-    this.unsub = undefined;
+    this.dispose?.();
+    this.dispose = undefined;
     removeElements(this.children);
     this.children.length = 0;
     this.positive.length = 0;

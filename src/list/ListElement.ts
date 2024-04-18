@@ -5,7 +5,7 @@ import { getFirstNode } from "../getFirstDomNode";
 import { getNodes } from "../getNodes";
 import { insertElements } from "../insertElements";
 import { onInsert } from "../onInsert";
-import { Computed, Reactive } from "../reactive";
+import { Reactive, Signal, effect } from "../reactive";
 import { removeElements } from "../removeElements";
 import { SmlrElement, SmlrNode } from "../types";
 import { ListItem } from "./ListItem";
@@ -159,7 +159,9 @@ export class ListElement<Item> implements SmlrElement {
   }
 
   toDom(): Node | Node[] {
-    this.array.subscribe(() => {
+    effect(() => {
+      this.array.value;
+      if (!this.isInserted) return;
       this.patch();
     });
 
@@ -175,7 +177,7 @@ export class ListElement<Item> implements SmlrElement {
 
 type Cache<Item> = Map<CacheKey<Item>, ListItem<Item>>;
 
-type RenderItemFn<Item> = (item: Item, index: Computed<number>) => SmlrNode;
+type RenderItemFn<Item> = (item: Item, index: Signal<number>) => SmlrNode;
 
 type CacheKey<Item> = string | number | Item;
 

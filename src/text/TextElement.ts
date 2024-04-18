@@ -1,7 +1,7 @@
 import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
-import { Reactive, UnsubscribeFn } from "../reactive";
-import { SmlrElement, ReactiveProp, TextNode } from "../types";
-import { getPropValue, isReactive } from "../utils";
+import { UnsubscribeFn, effect } from "../reactive";
+import { ReactiveProp, SmlrElement, TextNode } from "../types";
+import { getPropValue, getReactiveValue } from "../utils";
 
 export class TextElement implements SmlrElement {
   constructor(text: ReactiveProp<TextNode>) {
@@ -13,7 +13,7 @@ export class TextElement implements SmlrElement {
   parent!: SmlrElement;
   index!: number;
   domNode: Text | undefined;
-  unsub: UnsubscribeFn | undefined;
+  dispose: UnsubscribeFn | undefined;
 
   get isInserted() {
     return !!this.domNode?.isConnected;
@@ -28,16 +28,13 @@ export class TextElement implements SmlrElement {
   }
 
   toDom() {
-    let value = this.text;
+    let value;
 
-    if (isReactive(this.text)) {
-      value = this.text.value;
-
-      this.unsub = this.text.subscribe(() => {
-        const value = (this.text as Reactive).value;
-        this.domNode!.textContent = String(value);
-      });
-    }
+    this.dispose = effect(() => {
+      value = getReactiveValue(this.text);
+      if (!this.isInserted) return;
+      this.domNode!.textContent = String(value);
+    });
 
     this.domNode = document.createTextNode(String(value));
     return this.domNode;
@@ -50,8 +47,8 @@ export class TextElement implements SmlrElement {
   onInsert() {}
 
   remove() {
-    this.unsub?.();
-    this.unsub = undefined;
+    this.dispose?.();
+    this.dispose = undefined;
     this.domNode?.remove();
     this.domNode = undefined;
   }

@@ -1,11 +1,10 @@
-import { Computed } from "./Computed";
-import { State } from "./State";
+import { Signal } from "@preact/signals-core";
 
-export type Dep = State<any> | Computed<any>;
+export type Dep = any;
 
 export type Sub = () => void;
 
-export type Reactive<Value = any> = State<Value> | Computed<Value>;
+export type Reactive<Value = any> = Signal<Value>;
 
 export type UnsubscribeFn = () => void;
 
@@ -20,3 +19,5 @@ export type EffectCleanupFn = () => any;
 export type EffectOptions = {
   timing?: "sync" | "afterPaint";
 };
+
+export { Signal };
