@@ -2,7 +2,7 @@ import { ELEMENT_BRAND, ELEMENT_TYPES, VOID_TAGS_MAP } from "../constants";
 import { createDomNodes } from "../createDomNodes";
 import { createHtmlString } from "../createHtmlString";
 import { onInsert } from "../onInsert";
-import { DisposeFn, effect } from "../reactive";
+import { DisposeFn, effectInternal } from "../reactive";
 import { resolveNode } from "../resolveNode";
 import { CssProperties, DataSet, HtmlProps, SmlrElement } from "../types";
 import {
@@ -108,7 +108,7 @@ export class HtmlElement implements SmlrElement {
       if (this.props.props) {
         entries(this.props.props).forEach(([key, value]) => {
           this.unsubs.push(
-            effect(() => this.setProp(key, getReactiveValue(value)))
+            effectInternal(() => this.setProp(key, getReactiveValue(value)))
           );
         });
       }
@@ -116,7 +116,9 @@ export class HtmlElement implements SmlrElement {
       const v = getPropValue(value);
 
       if (isReactive(value)) {
-        this.unsubs.push(effect(() => this.setSpecialProp(key, value.value)));
+        this.unsubs.push(
+          effectInternal(() => this.setSpecialProp(key, value.value))
+        );
       }
 
       this.setSpecialProp(key, v);

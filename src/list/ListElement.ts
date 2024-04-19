@@ -5,7 +5,7 @@ import { getFirstNode } from "../getFirstDomNode";
 import { getNodes } from "../getNodes";
 import { insertElements } from "../insertElements";
 import { onInsert } from "../onInsert";
-import { Reactive, Signal, DisposeFn, effect } from "../reactive";
+import { DisposeFn, Reactive, Signal, effectInternal } from "../reactive";
 import { removeElements } from "../removeElements";
 import { SmlrElement, SmlrNode } from "../types";
 import { ListItem } from "./ListItem";
@@ -160,7 +160,7 @@ export class ListElement<Item> implements SmlrElement {
   }
 
   toDom(): Node | Node[] {
-    effect(() => {
+    this.dispose = effectInternal(() => {
       this.array.value;
       if (!this.isInserted) return;
       this.patch();

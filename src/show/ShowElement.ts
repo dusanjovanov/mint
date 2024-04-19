@@ -5,7 +5,7 @@ import { getFirstNode } from "../getFirstDomNode";
 import { getNodes } from "../getNodes";
 import { insertElements } from "../insertElements";
 import { onInsert } from "../onInsert";
-import { Reactive, DisposeFn, effect } from "../reactive";
+import { DisposeFn, Reactive, effectInternal } from "../reactive";
 import { removeElements } from "../removeElements";
 import { resolveNode } from "../resolveNode";
 import { DomNode, SmlrElement, SmlrNode } from "../types";
@@ -72,7 +72,7 @@ export class ShowElement implements SmlrElement {
     this.create();
     this.prevCondition = this.condition.value;
 
-    this.dispose = effect(() => {
+    this.dispose = effectInternal(() => {
       this.condition.value;
       if (!this.isInserted) return;
       this.update();

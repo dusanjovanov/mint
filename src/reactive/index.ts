@@ -12,3 +12,5 @@ export const effect = (...args: Parameters<typeof effectOriginal>) => {
     el.disposers.push(dispose);
   }
 };
+
+export const effectInternal = effectOriginal;
