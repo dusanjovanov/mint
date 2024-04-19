@@ -1,80 +1,63 @@
-import { signal } from "../reactive";
-import {
-  NavigateOptions,
-  RouteMatch,
-  RouterMatches,
-  RouterOptions,
-} from "./types";
+import { component } from "../component";
+import { computed, signal } from "../reactive";
+import { SmlrNode } from "../types";
+import { createContext } from "../utils";
+import { matchPath } from "./matchPath";
+import { NavigateOptions, RouterMatches, RouterOptions } from "./types";
 
-export class Router {
-  constructor({ history, routes }: RouterOptions) {
-    this.history = history;
-    this.routes = routes;
-    this.history.listen(() => {
-      this.matchRoutes();
-    });
-    this.matches = signal(new Map() as RouterMatches);
-    this.matchRoutes();
-  }
-  matches;
-  routes;
-  history;
+export type RouterProps = {
+  config: RouterOptions;
+  children: SmlrNode;
+};
 
-  matchRoutes() {
+const createRouter = ({ history, routes }: RouterOptions) => {
+  const matches = signal(new Map() as RouterMatches);
+
+  const matchRoutes = () => {
     const newMatches: RouterMatches = new Map();
 
-    this.routes.forEach((route) => {
-      const match = this.matchPath(this.history.location.pathname, route.path);
+    routes.forEach((route) => {
+      const match = matchPath(history.location.pathname, {
+        path: route.path,
+        exact: true,
+      });
       newMatches.set(route.key, match);
     });
-    this.matches.value = newMatches;
-  }
+    matches.value = newMatches;
+  };
 
-  matchPath(urlPath: string = "", routePath: string): RouteMatch | null {
-    if (routePath === "/") {
-      if (urlPath === "/") return { params: {} };
-      else return null;
-    }
+  history.listen(() => {
+    matchRoutes();
+  });
 
-    const urlParts = urlPath.split("/").filter(Boolean);
-    const routeParts = routePath.split("/").filter(Boolean);
+  matchRoutes();
 
-    const urlPartsLen = urlParts.length;
-    const routePartsLen = routeParts.length;
-
-    if (routePartsLen > urlPartsLen) return null;
-
-    const minLen = Math.min(urlPartsLen, routePartsLen);
-
-    const params: any = {};
-
-    for (let i = 0; i < minLen; i++) {
-      const urlPart = urlParts[i];
-      const routePart = routeParts[i];
-
-      const isParam = routePart.startsWith(":");
-
-      if (isParam) {
-        params[routePart.slice(1)] = urlPart;
+  return {
+    navigate(path: string, options?: NavigateOptions) {
+      if (options?.replace) {
+        history.replace(path, options.state);
       }
       //
       else {
-        if (routePart !== urlPart) return null;
+        history.push(path, options?.state);
       }
-    }
+    },
+    getMatch(key: string) {
+      return computed(() => matches.value.get(key));
+    },
+  };
+};
 
-    return {
-      params,
-    };
+export const Router = component<RouterProps>(
+  ({ config: { history, routes }, children }) => {
+    const router = createRouter({ history, routes });
+    setRouter(router);
+    return children;
   }
+);
 
-  navigate(path: string, options?: NavigateOptions) {
-    if (options?.replace) {
-      this.history.replace(path, options.state);
-    }
-    //
-    else {
-      this.history.push(path, options?.state);
-    }
-  }
-}
+export type SmlrRouter = ReturnType<typeof createRouter>;
+
+export const [getRouter, setRouter] = createContext(
+  (router: SmlrRouter) => router
+);

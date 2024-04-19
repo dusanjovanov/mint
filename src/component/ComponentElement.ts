@@ -1,6 +1,7 @@
 import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
 import { createDomNodes } from "../createDomNodes";
 import { createHtmlString } from "../createHtmlString";
+import { findAncestorElement } from "../findAncestorElement";
 import { getFirstNode } from "../getFirstDomNode";
 import { getNodes } from "../getNodes";
 import { onInsert } from "../onInsert";
@@ -8,7 +9,7 @@ import { SubReactive } from "../reactive";
 import { removeElements } from "../removeElements";
 import { resolveNode } from "../resolveNode";
 import { SmlrElement, SmlrNode } from "../types";
-import { ComponentApi } from "./ComponentApi";
+import { isElementOfType } from "../utils";
 
 export class ComponentElement<Props> implements SmlrElement {
   constructor({
@@ -43,7 +44,9 @@ export class ComponentElement<Props> implements SmlrElement {
   }
 
   create() {
-    const node = this.render(new ComponentApi(this), this.props);
+    currentComponent.current = this;
+    const node = this.render(this.props);
+    currentComponent.current = null;
     this.children = resolveNode(node, this);
   }
 
@@ -83,9 +86,35 @@ export const component =
     });
   };
 
-export type ComponentRenderFn<Props> = (
-  api: ComponentApi,
-  props: Props
-) => SmlrNode;
+export type ComponentRenderFn<Props> = (props: Props) => SmlrNode;
 
 export type LifecycleCallback = () => void;
+
+export const setContext = <Value>(key: any, value: Value) => {
+  currentComponent.current!.context.set(key, value);
+};
+
+export const getContext = <Value>(key: any) => {
+  const compnentElWithContext = findAncestorElement(
+    currentComponent.current!,
+    (current) =>
+      isElementOfType(current, "component") && current.context.has(key)
+  ) as ComponentElement<any>;
+
+  if (!compnentElWithContext) return undefined as Value;
+
+  return compnentElWithContext.context.get(key) as Value;
+};
+
+const currentComponent = (() => {
+  let current: ComponentElement<any> | null;
+
+  return {
+    get current() {
+      return current;
+    },
+    set current(curr: ComponentElement<any> | null) {
+      current = curr;
+    },
+  };
+})();

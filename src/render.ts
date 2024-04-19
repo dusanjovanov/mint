@@ -4,30 +4,19 @@ import { Head } from "./head";
 import { HtmlElement } from "./html";
 import { onInsert } from "./onInsert";
 import { resolveNode } from "./resolveNode";
-import { Router, RouterOptions, createBrowserHistory } from "./router";
 import { SmlrNode } from "./types";
 
-export const render = (
-  node: SmlrNode,
-  container: HTMLElement,
-  options: RenderOptions
-) => {
+export const render = (node: SmlrNode, container: HTMLElement) => {
   container.innerHTML = "";
 
   const containerEl = new HtmlElement(container.tagName, {});
   containerEl.domNode = container;
   containerEl.index = 0;
 
-  const router = new Router({
-    history: createBrowserHistory(),
-    routes: options.routes,
-  });
-
   const head = new Head();
 
   const elements = resolveNode(
     AppProvider({
-      router,
       head,
       children: node,
     }),
@@ -36,8 +25,4 @@ export const render = (
   const domNodes = createDomNodes(elements);
   container.append(...domNodes);
   onInsert(elements);
-};
-
-export type RenderOptions = {
-  routes: RouterOptions["routes"];
 };

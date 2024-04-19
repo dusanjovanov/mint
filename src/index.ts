@@ -11,4 +11,4 @@ export * from "./show";
 export * from "./ssr";
 export * from "./text";
 export * from "./types";
-export { createContext, getPropValue, getReactiveValue } from "./utils";
+export { getPropValue, getReactiveValue } from "./utils";
