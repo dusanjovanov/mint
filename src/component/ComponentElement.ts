@@ -77,7 +77,7 @@ export class ComponentElement<Props> implements SmlrElement {
   }
 }
 
-export const component =
+export const cp =
   <Props = void>(render: ComponentRenderFn<Props>) =>
   (props: Props) => {
     return new ComponentElement({

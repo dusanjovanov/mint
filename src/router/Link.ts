@@ -1,4 +1,4 @@
-import { component } from "../component";
+import { cp } from "../component";
 import { htm } from "../html";
 import { HtmlProps, ReactiveProp } from "../types";
 import { getPropValue } from "../utils";
@@ -10,7 +10,7 @@ export type LinkProps = {
 } & NavigateOptions &
   HtmlProps<"a">;
 
-export const Link = component<LinkProps>(
+export const Link = cp<LinkProps>(
   ({ path, replace, state, children, ...anchorProps }) => {
     const router = getRouter();
 

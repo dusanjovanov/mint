@@ -1,4 +1,4 @@
-import { component } from "../component";
+import { cp } from "../component";
 import { computed, signal } from "../reactive";
 import { SmlrNode } from "../types";
 import { createContext } from "../utils";
@@ -48,7 +48,7 @@ const createRouter = ({ history, routes }: RouterOptions) => {
   };
 };
 
-export const Router = component<RouterProps>(
+export const Router = cp<RouterProps>(
   ({ config: { history, routes }, children }) => {
     const router = createRouter({ history, routes });
     setRouter(router);

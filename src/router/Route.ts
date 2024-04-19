@@ -1,4 +1,4 @@
-import { component } from "../component";
+import { cp } from "../component";
 import { show } from "../show";
 import { SmlrNode } from "../types";
 import { getRouter } from "./Router";
@@ -8,7 +8,7 @@ type RouteProps = {
   children: SmlrNode;
 };
 
-export const Route = component<RouteProps>(({ key, children }) => {
+export const Route = cp<RouteProps>(({ key, children }) => {
   const router = getRouter();
 
   console.log(router.getMatch(key));

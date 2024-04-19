@@ -1,4 +1,4 @@
-import { component } from "./component";
+import { cp } from "./component";
 import { Head } from "./head";
 import { SmlrNode } from "./types";
 
@@ -10,7 +10,7 @@ type AppContextProps = {
   head: Head;
 };
 
-export const AppProvider = component<AppProviderProps>(({ head, children }) => {
+export const AppProvider = cp<AppProviderProps>(({ head, children }) => {
   return children;
 });
 
