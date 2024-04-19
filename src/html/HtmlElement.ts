@@ -2,7 +2,7 @@ import { ELEMENT_BRAND, ELEMENT_TYPES, VOID_TAGS_MAP } from "../constants";
 import { createDomNodes } from "../createDomNodes";
 import { createHtmlString } from "../createHtmlString";
 import { onInsert } from "../onInsert";
-import { UnsubscribeFn, effect } from "../reactive";
+import { DisposeFn, effect } from "../reactive";
 import { resolveNode } from "../resolveNode";
 import { CssProperties, DataSet, HtmlProps, SmlrElement } from "../types";
 import {
@@ -29,7 +29,7 @@ export class HtmlElement implements SmlrElement {
   children: SmlrElement[] = [];
   prevStyle: CssProperties | undefined;
   prevData: DataSet | undefined;
-  unsubs: UnsubscribeFn[] = [];
+  unsubs: DisposeFn[] = [];
 
   get isInserted() {
     return !!this.domNode?.isConnected;

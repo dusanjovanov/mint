@@ -5,7 +5,7 @@ import { findAncestorElement } from "../findAncestorElement";
 import { getFirstNode } from "../getFirstDomNode";
 import { getNodes } from "../getNodes";
 import { onInsert } from "../onInsert";
-import { SubReactive } from "../reactive";
+import { DisposeFn } from "../reactive";
 import { removeElements } from "../removeElements";
 import { resolveNode } from "../resolveNode";
 import { SmlrElement, SmlrNode } from "../types";
@@ -33,7 +33,7 @@ export class ComponentElement<Props> implements SmlrElement {
   context = new Map();
   onInsertCbs: LifecycleCallback[] = [];
   onRemoveCbs: LifecycleCallback[] = [];
-  subReactives = new Set<SubReactive>();
+  disposers: DisposeFn[] = [];
 
   getNodes() {
     return getNodes(this.children);
@@ -67,7 +67,7 @@ export class ComponentElement<Props> implements SmlrElement {
   }
 
   remove() {
-    this.subReactives.forEach((s) => s.dispose());
+    this.disposers.forEach((d) => d());
     removeElements(this.children);
     this.children.length = 0;
     this.isInserted = false;
@@ -104,6 +104,10 @@ export const getContext = <Value>(key: any) => {
   if (!compnentElWithContext) return undefined as Value;
 
   return compnentElWithContext.context.get(key) as Value;
+};
+
+export const getCurrentCp = () => {
+  return currentComponent.current;
 };
 
 const currentComponent = (() => {

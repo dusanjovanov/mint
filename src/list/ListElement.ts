@@ -5,7 +5,7 @@ import { getFirstNode } from "../getFirstDomNode";
 import { getNodes } from "../getNodes";
 import { insertElements } from "../insertElements";
 import { onInsert } from "../onInsert";
-import { Reactive, Signal, effect } from "../reactive";
+import { Reactive, Signal, DisposeFn, effect } from "../reactive";
 import { removeElements } from "../removeElements";
 import { SmlrElement, SmlrNode } from "../types";
 import { ListItem } from "./ListItem";
@@ -36,6 +36,7 @@ export class ListElement<Item> implements SmlrElement {
   _cache: Cache<Item> = new Map();
   _prevArr!: Item[];
   _getItemKey;
+  dispose: DisposeFn | undefined;
 
   _getKey(item: Item, index: number) {
     if (this._getItemKey) {

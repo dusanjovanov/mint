@@ -1,5 +1,5 @@
 import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
-import { UnsubscribeFn, effect } from "../reactive";
+import { DisposeFn, effect } from "../reactive";
 import { ReactiveProp, SmlrElement, TextNode } from "../types";
 import { getPropValue, getReactiveValue } from "../utils";
 
@@ -13,7 +13,7 @@ export class TextElement implements SmlrElement {
   parent!: SmlrElement;
   index!: number;
   domNode: Text | undefined;
-  dispose: UnsubscribeFn | undefined;
+  dispose: DisposeFn | undefined;
 
   get isInserted() {
     return !!this.domNode?.isConnected;
