@@ -5,11 +5,11 @@ import { getRouter } from "./Router";
 
 type RouteProps = {
   key: string;
-  children: SmlrNode;
+  node: SmlrNode;
 };
 
-export const Route = cp<RouteProps>(({ key, children }) => {
+export const Route = cp<RouteProps>(({ key, node }) => {
   const router = getRouter();
 
-  return show(router.getMatch(key), children);
+  return show(router.getMatch(key), node);
 });

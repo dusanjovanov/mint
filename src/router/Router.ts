@@ -7,7 +7,7 @@ import { NavigateOptions, RouterMatches, RouterOptions } from "./types";
 
 export type RouterProps = {
   config: RouterOptions;
-  children: SmlrNode;
+  node: SmlrNode;
 };
 
 const createRouter = ({ history, routes }: RouterOptions) => {
@@ -45,14 +45,17 @@ const createRouter = ({ history, routes }: RouterOptions) => {
     getMatch(key: string) {
       return computed(() => matches.value.get(key));
     },
+    getParams<Params = Record<string, string>>(key: string) {
+      return computed(() => matches.value.get(key)?.params! as Params);
+    },
   };
 };
 
 export const Router = cp<RouterProps>(
-  ({ config: { history, routes }, children }) => {
+  ({ config: { history, routes }, node }) => {
     const router = createRouter({ history, routes });
     setRouter(router);
-    return children;
+    return node;
   }
 );
 

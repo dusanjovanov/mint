@@ -31,22 +31,35 @@ export type SmlrElement = {
 
 export type DomNode = HTMLElement | Text;
 
+type A = HTMLElementEventMap;
+
 export type HtmlProps<Tag extends keyof HTMLElementTagNameMap> = {
-  /** Events */
-  on?: {
-    [Type in keyof HTMLElementEventMap]?: (
-      e: HTMLElementEventMap[Type] & {
-        currentTarget: HTMLElementTagNameMap[Tag];
-      }
-    ) => void;
-  };
-  props?: Record<string, any>;
-  children?: SmlrNode;
-  show?: Reactive<any>;
-  style?: ReactiveProp<CssProperties>;
-  innerHtml?: ReactiveProp<string>;
-  /** Short for class, className */
-  cls?: string;
+  node?: SmlrNode;
+} & ReactiveProps<HtmlAttributes> &
+  HtmlEvents<HTMLElementTagNameMap[Tag]>;
+
+type HtmlEvents<E extends Element> = {
+  onClick?: (e: MouseEvent & { currentTarget: E }) => void;
+  onMouseDown?: (e: MouseEvent & { currentTarget: E }) => void;
+  onKeyDown?: (e: KeyboardEvent & { currentTarget: E }) => void;
+  onSubmit?: (e: SubmitEvent & { currentTarget: E }) => void;
+  onInput?: (e: Event & { currentTarget: E }) => void;
+  onChange?: (e: Event & { currentTarget: E }) => void;
+};
+
+type HtmlAttributes = {
+  style?: CssProperties;
+  innerHtml?: string;
+  className?: string;
+  id?: string;
+  name?: string;
+  htmlFor?: string;
+  href?: string;
+  type?: string;
+  disabled?: boolean;
+  min?: number;
+  max?: number;
+  value?: string | number;
 };
 
 export type ReactiveProps<T> = {

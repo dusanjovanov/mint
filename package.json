@@ -1,6 +1,6 @@
 {
   "name": "smlr",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Frontend framework",
   "type": "module",
   "main": "dist/index.cjs",
@@ -32,6 +32,7 @@
   "license": "MIT",
   "dependencies": {
     "@preact/signals-core": "^1.6.0",
+    "@tanstack/query-core": "^5.29.0",
     "csstype": "^3.1.2",
     "history": "^5.3.0",
     "path-to-regexp": "^6.2.2"

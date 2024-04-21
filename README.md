@@ -15,15 +15,13 @@ const Counter = cp(() => {
   const doubleCount = computed(() => count.value * 2);
 
   return [
-    htm("div", { children: ["Count is: ", count] }),
-    htm("div", { children: ["Double count is: ", doubleCount] }),
+    htm("div", { node: ["Count is: ", count] }),
+    htm("div", { node: ["Double count is: ", doubleCount] }),
     htm("button", {
-      on: {
-        click: () => {
-          count.value++;
-        },
+      onClick: () => {
+        count.value++;
       },
-      children: "+",
+      node: "+",
     }),
   ];
 });

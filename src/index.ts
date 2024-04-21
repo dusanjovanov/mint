@@ -1,9 +1,9 @@
-export * from "./AppProvider";
 export * from "./component";
 export { HeadElement, head } from "./head";
 export * from "./html";
 export * from "./list";
 export * from "./portal";
+export * from "./query";
 export * from "./reactive";
 export * from "./render";
 export * from "./router";
@@ -11,4 +11,4 @@ export * from "./show";
 export * from "./ssr";
 export * from "./text";
 export * from "./types";
-export { getPropValue, getReactiveValue } from "./utils";
+export { createContext, getPropValue } from "./utils";

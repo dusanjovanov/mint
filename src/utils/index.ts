@@ -3,7 +3,6 @@ export * from "./camelToKebab";
 export * from "./createContext";
 export * from "./entries";
 export * from "./getPropValue";
-export * from "./getReactiveValue";
 export * from "./isElementOfType";
 export * from "./isMintElement";
 export * from "./isObject";

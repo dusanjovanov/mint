@@ -1,7 +1,5 @@
-import { APP_PROVIDER_KEY } from "../AppProvider";
 import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
 import { createDomNodes } from "../createDomNodes";
-import { getContext } from "../getContext";
 import { resolveNode } from "../resolveNode";
 import { SmlrElement, SmlrNode } from "../types";
 import { Head } from "./Head";
@@ -36,7 +34,6 @@ export class HeadElement implements SmlrElement {
   }
 
   create() {
-    this.head = getContext<any>(APP_PROVIDER_KEY, this).head;
     this.children = resolveNode(this.nodes, this);
   }
 

@@ -11,22 +11,17 @@ export type LinkProps = {
   HtmlProps<"a">;
 
 export const Link = cp<LinkProps>(
-  ({ path, replace, state, children, ...anchorProps }) => {
+  ({ path, replace, state, ...anchorProps }) => {
     const router = getRouter();
 
     return htm("a", {
       ...anchorProps,
-      props: {
-        href: path,
+      href: path,
+      onClick: (e) => {
+        e.preventDefault();
+        router.navigate(getPropValue(path), { replace, state });
+        anchorProps.onClick?.(e);
       },
-      on: {
-        click: (e) => {
-          e.preventDefault();
-          router.navigate(getPropValue(path), { replace, state });
-          anchorProps.on?.click?.(e);
-        },
-      },
-      children,
     });
   }
 );

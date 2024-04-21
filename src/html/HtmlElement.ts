@@ -10,7 +10,6 @@ import {
   camelToKebab,
   entries,
   getPropValue,
-  getReactiveValue,
   isReactive,
 } from "../utils";
 
@@ -59,34 +58,29 @@ export class HtmlElement implements SmlrElement {
     });
   }
 
-  setSpecialProp(key: string, value: any) {
-    if (!this.domNode) return;
-
+  setProp(key: string, value: any) {
     if (key === "style") {
       this.setStyle(value);
     }
     //
-    else if (key === "cls") {
-      this.domNode.className = value;
+    else if (key === "innerHtml") {
+      this.domNode!.innerHTML = value;
     }
     //
-    else if (key === "innerHtml") {
-      this.domNode.innerHTML = value;
-    }
-  }
-
-  setProp(key: string, value: any) {
-    if (PROP_MAP[key]) {
+    else if (PROP_MAP[key]) {
       (this.domNode as any)![key] = value;
     }
     //
     else {
-      this.domNode!.setAttribute(key, value);
+      this.domNode!.setAttribute(
+        ATTRIBUTE_ALIASES[key] ? ATTRIBUTE_ALIASES[key] : key,
+        value
+      );
     }
   }
 
   create() {
-    this.children = resolveNode(this.props.children, this);
+    this.children = resolveNode(this.props.node, this);
   }
 
   toDom() {
@@ -97,31 +91,23 @@ export class HtmlElement implements SmlrElement {
     this.domNode.append(...createDomNodes(this.children));
 
     entries(this.props).forEach(([key, value]) => {
-      if (key === "ref") return;
+      if (key === "ref" || key === "node") return;
 
-      if (this.props.on) {
-        entries(this.props.on).forEach(([type, handler]) => {
-          this.domNode!.addEventListener(type as any, handler as any);
-        });
+      if (isEventProp(key)) {
+        this.domNode!.addEventListener(getEventTypeFromProp(key), value);
       }
-
-      if (this.props.props) {
-        entries(this.props.props).forEach(([key, value]) => {
+      //
+      else {
+        if (isReactive(value)) {
           this.unsubs.push(
-            effectInternal(() => this.setProp(key, getReactiveValue(value)))
+            effectInternal(() => this.setProp(key, value.value))
           );
-        });
+        }
+        //
+        else {
+          this.setProp(key, value);
+        }
       }
-
-      const v = getPropValue(value);
-
-      if (isReactive(value)) {
-        this.unsubs.push(
-          effectInternal(() => this.setSpecialProp(key, value.value))
-        );
-      }
-
-      this.setSpecialProp(key, v);
     });
 
     return this.domNode;
@@ -137,26 +123,24 @@ export class HtmlElement implements SmlrElement {
     let content = "";
 
     for (const key of keys) {
-      if (key === "on" || key === "children") continue;
+      if (key === "on" || key === "node") continue;
 
       const value = this.props[key];
 
       if (key === "style") {
-        propsStrings.push(
-          `style="${styleObjToString(getReactiveValue(value))}"`
-        );
+        propsStrings.push(`style="${styleObjToString(getPropValue(value))}"`);
       }
       //
       else if (key === "props") {
         entries(value).forEach(([k, v]) => {
           const keyAlias = ATTRIBUTE_ALIASES[k];
 
-          propsStrings.push(`${keyAlias ?? k}="${getReactiveValue(v)}"`);
+          propsStrings.push(`${keyAlias ?? k}="${getPropValue(v)}"`);
         });
       }
       //
       else if (key === "innerHtml") {
-        content = getReactiveValue(value);
+        content = getPropValue(value);
       }
     }
 
@@ -200,6 +184,7 @@ export const PROP_MAP: Record<string, true> = {
   selected: true,
   type: true,
   value: true,
+  disabled: true,
 };
 
 export const ATTRIBUTE_ALIASES: Record<string, string> = {
@@ -227,3 +212,16 @@ export const htm = <Tag extends keyof HTMLElementTagNameMap>(
   tag: Tag,
   props: HtmlProps<Tag>
 ) => new HtmlElement(tag, props);
+
+const isEventProp = (key: string) => {
+  return key.startsWith("on");
+};
+
+const EVENT_ALIAS_MAP: Record<string, string> = {
+  doubleclick: "dblclick",
+};
+
+const getEventTypeFromProp = (key: string) => {
+  const type = key.slice(2).toLowerCase();
+  return type in EVENT_ALIAS_MAP ? EVENT_ALIAS_MAP[type] : type;
+};

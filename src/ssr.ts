@@ -1,4 +1,3 @@
-import { AppProvider } from "./AppProvider";
 import { createHtmlString } from "./createHtmlString";
 import { Head } from "./head";
 import { resolveNode } from "./resolveNode";
@@ -7,13 +6,7 @@ import { SmlrElement, SmlrNode } from "./types";
 export const ssr = (node: SmlrNode, options: SsrOptions) => {
   const head = new Head(true);
 
-  const elements = resolveNode(
-    AppProvider({
-      head,
-      children: node,
-    }),
-    {} as SmlrElement
-  );
+  const elements = resolveNode(node, {} as SmlrElement);
 
   let bodyHtml = createHtmlString(elements);
 

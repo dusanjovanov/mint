@@ -1,7 +1,7 @@
 import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
 import { DisposeFn, effectInternal } from "../reactive";
 import { ReactiveProp, SmlrElement, TextNode } from "../types";
-import { getPropValue, getReactiveValue } from "../utils";
+import { getPropValue } from "../utils";
 
 export class TextElement implements SmlrElement {
   constructor(text: ReactiveProp<TextNode>) {
@@ -31,7 +31,7 @@ export class TextElement implements SmlrElement {
     let value;
 
     this.dispose = effectInternal(() => {
-      value = getReactiveValue(this.text);
+      value = getPropValue(this.text);
       if (!this.isInserted) return;
       this.domNode!.textContent = String(value);
     });
