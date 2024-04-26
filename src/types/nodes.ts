@@ -35,6 +35,8 @@ type A = HTMLElementEventMap;
 
 export type HtmlProps<Tag extends keyof HTMLElementTagNameMap> = {
   node?: SmlrNode;
+  ref?: Ref<HTMLElementTagNameMap[Tag]>;
+  use?: UseFn<HTMLElementTagNameMap[Tag]>;
 } & ReactiveProps<HtmlAttributes> &
   HtmlEvents<HTMLElementTagNameMap[Tag]>;
 
@@ -60,6 +62,8 @@ type HtmlAttributes = {
   min?: number;
   max?: number;
   value?: string | number;
+  popover?: boolean | string;
+  popovertarget?: string;
 };
 
 export type ReactiveProps<T> = {
@@ -71,3 +75,5 @@ export type ReactiveProp<T> = T | Reactive<T>;
 export type DataSet = Record<string, any>;
 
 export type Ref<E extends Element> = (el: E | null) => void;
+
+export type UseFn<E extends Element> = (el: E) => void;

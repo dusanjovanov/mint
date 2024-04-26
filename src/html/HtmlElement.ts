@@ -29,6 +29,7 @@ export class HtmlElement implements SmlrElement {
   prevStyle: CssProperties | undefined;
   prevData: DataSet | undefined;
   unsubs: DisposeFn[] = [];
+  useCleanup: DisposeFn | undefined;
 
   get isInserted() {
     return !!this.domNode?.isConnected;
@@ -91,7 +92,7 @@ export class HtmlElement implements SmlrElement {
     this.domNode.append(...createDomNodes(this.children));
 
     entries(this.props).forEach(([key, value]) => {
-      if (key === "ref" || key === "node") return;
+      if (key === "ref" || key === "use" || key === "node") return;
 
       if (isEventProp(key)) {
         this.domNode!.addEventListener(getEventTypeFromProp(key), value);
@@ -161,13 +162,13 @@ export class HtmlElement implements SmlrElement {
   }
 
   callRef(el: HTMLElement | null) {
-    if (!this.props.ref) return;
-    this.props.ref(el);
+    this.props.ref?.(el);
   }
 
   onInsert() {
     onInsert(this.children);
     this.callRef(this.domNode!);
+    this.useCleanup = this.props.use?.(this.domNode);
   }
 
   remove() {
@@ -175,6 +176,8 @@ export class HtmlElement implements SmlrElement {
     this.domNode?.remove();
     this.domNode = undefined;
     this.callRef(null);
+    this.useCleanup?.();
+    this.useCleanup = undefined;
   }
 }
 
