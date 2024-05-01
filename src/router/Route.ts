@@ -11,5 +11,5 @@ type RouteProps = {
 export const Route = cp<RouteProps>(({ key, node }) => {
   const router = getRouter();
 
-  return show(router.getMatch(key), node);
+  return show(() => !!router.getMatch(key).value, node);
 });
