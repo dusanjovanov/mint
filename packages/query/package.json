@@ -1,5 +1,5 @@
 {
-  "name": "@smlr/core",
+  "name": "@smlr/query",
   "version": "0.0.1",
   "description": "Frontend framework",
   "type": "module",
@@ -24,15 +24,14 @@
     "test-dev": "vitest"
   },
   "keywords": [
-    "frontend",
-    "ui",
-    "router"
+    "smlr",
+    "query"
   ],
   "author": "Dusan Jovanov",
   "license": "MIT",
   "dependencies": {
-    "@preact/signals-core": "^1.6.0",
-    "csstype": "^3.1.2"
+    "@smlr/core": "workspace:*",
+    "@tanstack/query-core": "^5.29.0"
   },
   "devDependencies": {
     "prettier": "2.8",
