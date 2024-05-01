@@ -5,7 +5,7 @@ Frontend framework
 > Work in progress - not ready for production 🚧
 
 ```ts
-import { render, cp, htm, signal, computed } from "smlr";
+import { render, cp, htm, signal, computed } from "@smlr/core";
 
 const Counter = cp(() => {
   const count = signal(0);
