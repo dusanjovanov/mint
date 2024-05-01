@@ -1,5 +1,4 @@
 import * as CSS from "csstype";
-import { Reactive } from "../reactive";
 
 export type CssProperties = CSS.Properties<string | number>;
 
@@ -10,7 +9,7 @@ export type EmptyNode = boolean | null | undefined;
 export type SmlrNode =
   | EmptyNode
   | TextNode
-  | Reactive
+  | Function
   | SmlrElement
   | SmlrNode[];
 
@@ -53,7 +52,7 @@ type HtmlAttributes = {
   style?: CssProperties;
   innerHtml?: string;
   className?: string;
-  id?: string;
+  id?: string | number;
   name?: string;
   htmlFor?: string;
   href?: string;
@@ -70,7 +69,7 @@ export type ReactiveProps<T> = {
   [Key in keyof T]: ReactiveProp<T[Key]>;
 };
 
-export type ReactiveProp<T> = T | Reactive<T>;
+export type ReactiveProp<T> = T | (() => T);
 
 export type DataSet = Record<string, any>;
 

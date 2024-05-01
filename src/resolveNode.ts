@@ -1,6 +1,6 @@
 import { TextElement } from "./text";
 import { SmlrElement, SmlrNode } from "./types";
-import { isMintElement, isReactive, isTextNode } from "./utils";
+import { isFunction, isMintElement, isTextNode } from "./utils";
 
 export const resolveNode = (
   node: SmlrNode,
@@ -22,8 +22,8 @@ export const resolveNode = (
       el = new TextElement(n);
     }
     //
-    else if (isReactive(n)) {
-      el = new TextElement(n);
+    else if (isFunction(n)) {
+      el = new TextElement(n as any);
     }
     //
     else if (isMintElement(n)) {

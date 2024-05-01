@@ -1,7 +1,7 @@
 import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
 import { DisposeFn, effectInternal } from "../reactive";
 import { ReactiveProp, SmlrElement, TextNode } from "../types";
-import { getPropValue } from "../utils";
+import { getPropValue, isFunction } from "../utils";
 
 export class TextElement implements SmlrElement {
   constructor(text: ReactiveProp<TextNode>) {
@@ -28,13 +28,16 @@ export class TextElement implements SmlrElement {
   }
 
   toDom() {
-    let value;
+    let value = this.text;
 
-    this.dispose = effectInternal(() => {
-      value = getPropValue(this.text);
-      if (!this.isInserted) return;
-      this.domNode!.textContent = String(value);
-    });
+    if (isFunction(this.text)) {
+      this.dispose = effectInternal(() => {
+        // @ts-expect-error
+        value = this.text();
+        if (!this.domNode) return;
+        this.domNode.textContent = String(value);
+      });
+    }
 
     this.domNode = document.createTextNode(String(value));
     return this.domNode;

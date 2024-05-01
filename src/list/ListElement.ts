@@ -5,7 +5,7 @@ import { getFirstNode } from "../getFirstDomNode";
 import { getNodes } from "../getNodes";
 import { insertElements } from "../insertElements";
 import { onInsert } from "../onInsert";
-import { DisposeFn, Reactive, Signal, effectInternal } from "../reactive";
+import { DisposeFn, Signal, effectInternal } from "../reactive";
 import { removeElements } from "../removeElements";
 import { SmlrElement, SmlrNode } from "../types";
 import { ListItem } from "./ListItem";
@@ -16,7 +16,7 @@ export class ListElement<Item> implements SmlrElement {
     renderItem,
     getItemKey,
   }: {
-    array: Reactive<Item[]>;
+    array: () => Item[];
     renderItem: RenderItemFn<Item>;
     getItemKey?: GetItemKeyFn<Item>;
   }) {
@@ -65,13 +65,13 @@ export class ListElement<Item> implements SmlrElement {
     this.isInserted = false;
   }
 
-  create() {
-    this._prevArr = [...this.array.value];
+  create(arr: Item[]) {
+    this._prevArr = [...arr];
 
-    const len = this.array.value.length;
+    const len = arr.length;
 
     for (let i = 0; i < len; i++) {
-      const item = this.array.value[i];
+      const item = arr[i];
 
       const listItem = new ListItem({ item, index: i, el: this });
 
@@ -80,16 +80,16 @@ export class ListElement<Item> implements SmlrElement {
     }
   }
 
-  patch() {
+  patch(arr: Item[]) {
     const oldArr = this._prevArr;
-    const newArr = this.array.value;
+    const newArr = arr;
     const oldLen = oldArr.length;
     const newLen = newArr.length;
     this._prevArr = [...newArr];
 
     // fast path for prev empty
     if (oldLen === 0) {
-      this.create();
+      this.create(arr);
       createDomNodes(this.children);
       insertElements(this.children);
     }
@@ -160,18 +160,20 @@ export class ListElement<Item> implements SmlrElement {
   }
 
   toDom(): Node | Node[] {
+    let arr: Item[] = [];
+
     this.dispose = effectInternal(() => {
-      this.array.value;
+      arr = this.array();
       if (!this.isInserted) return;
-      this.patch();
+      this.patch(arr);
     });
 
-    this.create();
+    this.create(arr);
     return createDomNodes(this.children);
   }
 
   toHtml(): string {
-    this.create();
+    this.create(this.array());
     return createHtmlString(this.children);
   }
 }
@@ -185,7 +187,7 @@ type CacheKey<Item> = string | number | Item;
 type GetItemKeyFn<Item> = (item: Item, index: number) => CacheKey<Item>;
 
 export const list = <Item>(
-  array: Reactive<Item[]>,
+  array: () => Item[],
   renderItem: RenderItemFn<Item>,
   getItemKey?: GetItemKeyFn<Item>
 ) => {

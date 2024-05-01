@@ -5,13 +5,17 @@ import { getFirstNode } from "../getFirstDomNode";
 import { getNodes } from "../getNodes";
 import { insertElements } from "../insertElements";
 import { onInsert } from "../onInsert";
-import { DisposeFn, Reactive, effectInternal } from "../reactive";
+import { DisposeFn, effectInternal } from "../reactive";
 import { removeElements } from "../removeElements";
 import { resolveNode } from "../resolveNode";
 import { DomNode, SmlrElement, SmlrNode } from "../types";
 
 export class ShowElement implements SmlrElement {
-  constructor(condition: Reactive, positive: SmlrNode, negative?: SmlrNode) {
+  constructor(
+    condition: () => boolean,
+    positive: SmlrNode,
+    negative?: SmlrNode
+  ) {
     this.condition = condition;
     this.positiveNode = positive;
     this.negativeNode = negative;
@@ -38,9 +42,7 @@ export class ShowElement implements SmlrElement {
     return getFirstNode(this.children);
   }
 
-  update() {
-    const condition = !!this.condition.value;
-
+  update(condition: boolean) {
     if (condition !== this.prevCondition) {
       this.prevCondition = condition;
 
@@ -59,30 +61,31 @@ export class ShowElement implements SmlrElement {
     }
   }
 
-  create() {
+  create(condition: boolean) {
     this.positive = resolveNode(this.positiveNode, this);
     this.negative = resolveNode(this.negativeNode, this);
 
-    const condition = this.condition.value;
+    this.prevCondition = condition;
 
     this.children = condition ? this.positive : this.negative;
   }
 
   toDom() {
-    this.create();
-    this.prevCondition = this.condition.value;
-
+    let condition: boolean;
     this.dispose = effectInternal(() => {
-      this.condition.value;
+      condition = this.condition();
       if (!this.isInserted) return;
-      this.update();
+      this.update(condition);
     });
+
+    // @ts-expect-error
+    this.create(condition);
 
     return createDomNodes(this.children);
   }
 
   toHtml(): string {
-    this.create();
+    this.create(this.condition());
     return createHtmlString(this.children);
   }
 
@@ -104,7 +107,7 @@ export class ShowElement implements SmlrElement {
 }
 
 export const show = (
-  condition: Reactive,
+  condition: () => boolean,
   positive: SmlrNode,
   negative?: SmlrNode
 ) => {

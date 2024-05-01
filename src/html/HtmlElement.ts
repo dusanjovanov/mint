@@ -10,7 +10,7 @@ import {
   camelToKebab,
   entries,
   getPropValue,
-  isReactive,
+  isFunction,
 } from "../utils";
 
 export class HtmlElement implements SmlrElement {
@@ -28,7 +28,7 @@ export class HtmlElement implements SmlrElement {
   children: SmlrElement[] = [];
   prevStyle: CssProperties | undefined;
   prevData: DataSet | undefined;
-  unsubs: DisposeFn[] = [];
+  disposeFns: DisposeFn[] = [];
   useCleanup: DisposeFn | undefined;
 
   get isInserted() {
@@ -99,9 +99,9 @@ export class HtmlElement implements SmlrElement {
       }
       //
       else {
-        if (isReactive(value)) {
-          this.unsubs.push(
-            effectInternal(() => this.setProp(key, value.value))
+        if (isFunction(value)) {
+          this.disposeFns.push(
+            effectInternal(() => this.setProp(key, value()))
           );
         }
         //
@@ -172,7 +172,7 @@ export class HtmlElement implements SmlrElement {
   }
 
   remove() {
-    this.unsubs.forEach((u) => u());
+    this.disposeFns.forEach((u) => u());
     this.domNode?.remove();
     this.domNode = undefined;
     this.callRef(null);
