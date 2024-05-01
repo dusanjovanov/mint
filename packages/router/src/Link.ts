@@ -1,7 +1,7 @@
-import { cp } from "../component";
-import { htm } from "../html";
-import { HtmlProps, ReactiveProp } from "../types";
-import { getPropValue } from "../utils";
+import { cp } from "../../core/src/component";
+import { htm } from "../../core/src/html";
+import { HtmlProps, ReactiveProp } from "../../core/src/types";
+import { getPropValue } from "../../core/src/utils";
 import { getRouter } from "./Router";
 import { NavigateOptions } from "./types";
 

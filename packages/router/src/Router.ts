@@ -1,7 +1,7 @@
-import { cp } from "../component";
-import { computed, signal } from "../reactive";
-import { SmlrNode } from "../types";
-import { createContext } from "../utils";
+import { cp } from "../../core/src/component";
+import { computed, signal } from "../../core/src/reactive";
+import { SmlrNode } from "../../core/src/types";
+import { createContext } from "../../core/src/utils";
 import { matchPath } from "./matchPath";
 import { NavigateOptions, RouterMatches, RouterOptions } from "./types";
 

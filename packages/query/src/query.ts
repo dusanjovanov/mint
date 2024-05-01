@@ -1,5 +1,5 @@
 import { QueryObserver, QueryObserverOptions } from "@tanstack/query-core";
-import { effect, signal } from "../reactive";
+import { effect, signal } from "../../core/src/reactive";
 import { getQueryClient } from "./QueryProvider";
 
 export const query = (options: QueryObserverOptions) => {

@@ -1,7 +1,7 @@
 import { QueryClient } from "@tanstack/query-core";
-import { cp } from "../component";
-import { SmlrNode } from "../types";
-import { createContext } from "../utils";
+import { cp } from "../../core/src/component";
+import { SmlrNode } from "../../core/src/types";
+import { createContext } from "../../core/src/utils";
 
 export type QueryProviderProps = {
   queryClient: QueryClient;

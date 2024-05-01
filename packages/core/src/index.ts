@@ -1,14 +1,12 @@
 export * from "./component";
-export { HeadElement, head } from "./head";
+export * from "./head";
 export * from "./html";
 export * from "./list";
 export * from "./portal";
-export * from "./query";
 export * from "./reactive";
 export * from "./render";
-export * from "./router";
 export * from "./show";
 export * from "./ssr";
 export * from "./text";
 export * from "./types";
-export { createContext, getPropValue } from "./utils";
+export * from "./utils";

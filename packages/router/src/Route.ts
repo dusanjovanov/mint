@@ -1,6 +1,6 @@
-import { cp } from "../component";
-import { show } from "../show";
-import { SmlrNode } from "../types";
+import { cp } from "../../core/src/component";
+import { show } from "../../core/src/show";
+import { SmlrNode } from "../../core/src/types";
 import { getRouter } from "./Router";
 
 type RouteProps = {
