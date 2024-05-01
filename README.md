@@ -1,7 +1,4 @@
-<img src="https://github.com/dusanjovanov/smlr/blob/main/logo.png?raw=true" width="300" />
-
-[![npm version](https://badge.fury.io/js/smlr.svg)](https://www.npmjs.com/package/smlr)
-![npm bundle size](https://img.shields.io/bundlephobia/minzip/smlr)
+## smlr
 
 Frontend framework
 
