@@ -19,7 +19,7 @@ const createRouter = ({ history, routes }: RouterOptions) => {
     routes.forEach((route) => {
       const match = matchPath(history.location.pathname, {
         path: route.path,
-        exact: true,
+        exact: route.exact ?? false,
       });
       newMatches.set(route.key, match);
     });

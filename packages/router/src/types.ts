@@ -13,6 +13,8 @@ export type RouterOptions = {
 export type RouteConfig = {
   key: string;
   path: string;
+  /** @default false */
+  exact?: boolean;
 };
 
 export type RouteMatch = {
