@@ -1,6 +1,6 @@
 {
   "name": "@smlr/core",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Frontend framework",
   "type": "module",
   "main": "dist/index.cjs",
