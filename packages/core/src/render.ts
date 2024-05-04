@@ -7,7 +7,7 @@ import { SmlrNode } from "./types";
 export const render = (node: SmlrNode, container: HTMLElement) => {
   container.innerHTML = "";
 
-  const containerEl = new HtmlElement(container.tagName, {});
+  const containerEl = new HtmlElement(container.tagName.toLowerCase(), {});
   containerEl.domNode = container;
   containerEl.index = 0;
 

@@ -1,10 +1,21 @@
-import { ELEMENT_BRAND, ELEMENT_TYPES, VOID_TAGS_MAP } from "../constants";
+import {
+  ELEMENT_BRAND,
+  ELEMENT_TYPES,
+  SVG_TAGS_MAP,
+  VOID_TAGS_MAP,
+} from "../constants";
 import { createDomNodes } from "../createDomNodes";
 import { createHtmlString } from "../createHtmlString";
 import { onInsert } from "../onInsert";
 import { DisposeFn, effectInternal } from "../reactive";
 import { resolveNode } from "../resolveNode";
-import { CssProperties, DataSet, HtmlProps, SmlrElement } from "../types";
+import {
+  CssProperties,
+  DataSet,
+  HtmlElementTagNameMap,
+  HtmlProps,
+  SmlrElement,
+} from "../types";
 import {
   addPxIfNeeded,
   camelToKebab,
@@ -17,12 +28,14 @@ export class HtmlElement implements SmlrElement {
   constructor(tag: string, props: any) {
     this.tag = tag;
     this.props = props ?? {};
+    this.isSvg = SVG_TAGS_MAP[tag];
   }
   tag;
+  isSvg;
   props;
   brand = ELEMENT_BRAND;
   type = ELEMENT_TYPES.html;
-  domNode: HTMLElement | undefined;
+  domNode: HTMLElement | SVGElement | undefined;
   parent!: SmlrElement;
   index!: number;
   children: SmlrElement[] = [];
@@ -87,7 +100,9 @@ export class HtmlElement implements SmlrElement {
   toDom() {
     this.create();
 
-    this.domNode = document.createElement(this.tag);
+    this.domNode = this.isSvg
+      ? document.createElementNS("http://www.w3.org/2000/svg", this.tag)
+      : document.createElement(this.tag);
 
     this.domNode.append(...createDomNodes(this.children));
 
@@ -161,7 +176,7 @@ export class HtmlElement implements SmlrElement {
     return s;
   }
 
-  callRef(el: HTMLElement | null) {
+  callRef(el: HTMLElement | SVGElement | null) {
     this.props.ref?.(el);
   }
 
@@ -180,6 +195,11 @@ export class HtmlElement implements SmlrElement {
     this.useCleanup = undefined;
   }
 }
+
+export const htm = <Tag extends keyof HtmlElementTagNameMap>(
+  tag: Tag,
+  props: HtmlProps<Tag>
+) => new HtmlElement(tag, props);
 
 // html props treated as element properties ( not attributes )
 export const PROP_MAP: Record<string, true> = {
@@ -210,11 +230,6 @@ const styleObjToString = (obj: any) => {
   }
   return s;
 };
-
-export const htm = <Tag extends keyof HTMLElementTagNameMap>(
-  tag: Tag,
-  props: HtmlProps<Tag>
-) => new HtmlElement(tag, props);
 
 const isEventProp = (key: string) => {
   return key.startsWith("on");

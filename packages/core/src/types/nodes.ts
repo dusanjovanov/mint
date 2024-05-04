@@ -28,16 +28,16 @@ export type SmlrElement = {
   remove(): void;
 };
 
-export type DomNode = HTMLElement | Text;
+export type DomNode = HTMLElement | SVGElement | Text;
 
 type A = HTMLElementEventMap;
 
-export type HtmlProps<Tag extends keyof HTMLElementTagNameMap> = {
+export type HtmlProps<Tag extends keyof HtmlElementTagNameMap> = {
   node?: SmlrNode;
-  ref?: Ref<HTMLElementTagNameMap[Tag]>;
-  use?: UseFn<HTMLElementTagNameMap[Tag]>;
+  ref?: Ref<HtmlElementTagNameMap[Tag]>;
+  use?: UseFn<HtmlElementTagNameMap[Tag]>;
 } & ReactiveProps<HtmlAttributes> &
-  HtmlEvents<HTMLElementTagNameMap[Tag]>;
+  HtmlEvents<HtmlElementTagNameMap[Tag]>;
 
 type HtmlEvents<E extends Element> = {
   onClick?: (e: MouseEvent & { currentTarget: E }) => void;
@@ -64,6 +64,14 @@ type HtmlAttributes = {
   popover?: boolean | string;
   popovertarget?: string;
   checked?: boolean;
+  width?: string | number;
+  height?: string | number;
+  viewBox?: string;
+  ["clip-rule"]?: string;
+  ["fill-rule"]?: string;
+  ["stroke-linejoin"]?: string;
+  ["stroke-miterlimit"]?: string;
+  d?: string;
 };
 
 export type ReactiveProps<T> = {
@@ -77,3 +85,6 @@ export type DataSet = Record<string, any>;
 export type Ref<E extends Element> = (el: E | null) => void;
 
 export type UseFn<E extends Element> = (el: E) => void;
+
+export type HtmlElementTagNameMap = HTMLElementTagNameMap &
+  SVGElementTagNameMap;
