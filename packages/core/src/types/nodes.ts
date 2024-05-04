@@ -63,6 +63,7 @@ type HtmlAttributes = {
   value?: string | number;
   popover?: boolean | string;
   popovertarget?: string;
+  checked?: boolean;
 };
 
 export type ReactiveProps<T> = {

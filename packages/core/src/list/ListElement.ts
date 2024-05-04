@@ -73,7 +73,7 @@ export class ListElement<Item> implements SmlrElement {
     for (let i = 0; i < len; i++) {
       const item = arr[i];
 
-      const listItem = new ListItem({ item, index: i, el: this });
+      const listItem = new ListItem({ index: i, el: this });
 
       this._cache.set(this._getKey(item, i), listItem);
       this.children.push(...listItem.els);
@@ -120,16 +120,13 @@ export class ListElement<Item> implements SmlrElement {
         if (listItem) {
           // index changed
           if (listItem.index.value !== i) {
-            listItem.index.value = i;
-            listItem.els.forEach((el, idx) => {
-              el.index = i + idx;
-            });
+            listItem.updateIndex(i);
             toMove.push(...listItem.els);
           }
         }
         // new item
         else {
-          listItem = new ListItem({ item, index: i, el: this });
+          listItem = new ListItem({ index: i, el: this });
           toInsert.push(...listItem.els);
         }
         newCache.set(key, listItem);
@@ -180,7 +177,10 @@ export class ListElement<Item> implements SmlrElement {
 
 type Cache<Item> = Map<CacheKey<Item>, ListItem<Item>>;
 
-type RenderItemFn<Item> = (item: Item, index: Signal<number>) => SmlrNode;
+type RenderItemFn<Item> = (
+  item: Signal<Item>,
+  index: Signal<number>
+) => SmlrNode;
 
 type CacheKey<Item> = string | number | Item;
 

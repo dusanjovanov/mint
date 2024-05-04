@@ -18,11 +18,7 @@ export const resolveNode = (
 
     let el: SmlrElement;
 
-    if (isTextNode(n)) {
-      el = new TextElement(n);
-    }
-    //
-    else if (isFunction(n)) {
+    if (isTextNode(n) || isFunction(n)) {
       el = new TextElement(n as any);
     }
     //
