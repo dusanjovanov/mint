@@ -1,10 +1,11 @@
-import { findAncestorElement } from "./findAncestorElement";
+import { findAncestorElement } from "../findAncestorElement";
 import { findNextNode } from "./findNextNode";
-import { HtmlElement } from "./html";
-import { onInsert } from "./onInsert";
-import { PortalElement } from "./portal";
-import { SmlrElement } from "./types";
-import { isElementOfType } from "./utils";
+import { HtmlElement } from "../html";
+import { onInsert } from "../onInsert";
+import { PortalElement } from "../portal";
+import { SmlrElement } from "../types";
+import { isElementOfType } from "../utils";
+import { getNodesFromElement } from "./getNodes";
 
 export const insertElements = (elements: SmlrElement[]) => {
   for (const el of elements) {
@@ -22,7 +23,7 @@ export const insertElements = (elements: SmlrElement[]) => {
 
     const nextNode = findNextNode(el, boundary);
 
-    const nodes = el.getNodes();
+    const nodes = getNodesFromElement(el);
 
     for (const node of nodes) {
       domParent.insertBefore(node, nextNode ?? null);

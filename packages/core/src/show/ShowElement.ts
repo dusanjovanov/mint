@@ -1,14 +1,9 @@
 import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
-import { createDomNodes } from "../createDomNodes";
 import { createHtmlString } from "../createHtmlString";
-import { getFirstNode } from "../getFirstDomNode";
-import { getNodes } from "../getNodes";
-import { insertElements } from "../insertElements";
 import { onInsert } from "../onInsert";
 import { DisposeFn, effectInternal } from "../reactive";
-import { removeElements } from "../removeElements";
 import { resolveNode } from "../resolveNode";
-import { DomNode, SmlrElement, SmlrNode } from "../types";
+import { SmlrElement, SmlrNode, SmlrRenderer } from "../types";
 
 export class ShowElement implements SmlrElement {
   constructor(
@@ -33,33 +28,7 @@ export class ShowElement implements SmlrElement {
   positiveNode;
   negativeNode;
   dispose: DisposeFn | undefined;
-
-  getNodes() {
-    return getNodes(this.children);
-  }
-
-  getFirstNode(): DomNode | undefined {
-    return getFirstNode(this.children);
-  }
-
-  update(condition: boolean) {
-    if (condition !== this.prevCondition) {
-      this.prevCondition = condition;
-
-      this.children = condition ? this.positive : this.negative;
-
-      if (condition) {
-        removeElements(this.negative);
-      }
-      //
-      else {
-        removeElements(this.positive);
-      }
-
-      createDomNodes(this.children);
-      insertElements(this.children);
-    }
-  }
+  renderer!: SmlrRenderer;
 
   create(condition: boolean) {
     this.positive = resolveNode(this.positiveNode, this);
@@ -70,18 +39,14 @@ export class ShowElement implements SmlrElement {
     this.children = condition ? this.positive : this.negative;
   }
 
-  toDom() {
+  subscribe(onUpdate: (condition: boolean) => void) {
     let condition: boolean;
     this.dispose = effectInternal(() => {
       condition = this.condition();
       if (!this.isInserted) return;
-      this.update(condition);
+      onUpdate(condition);
     });
-
-    // @ts-expect-error
-    this.create(condition);
-
-    return createDomNodes(this.children);
+    return condition!;
   }
 
   toHtml(): string {
@@ -97,7 +62,7 @@ export class ShowElement implements SmlrElement {
   remove() {
     this.dispose?.();
     this.dispose = undefined;
-    removeElements(this.children);
+    this.renderer.removeElements(this.children);
     this.children.length = 0;
     this.positive.length = 0;
     this.negative.length = 0;

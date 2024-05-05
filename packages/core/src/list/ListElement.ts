@@ -1,13 +1,8 @@
 import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
-import { createDomNodes } from "../createDomNodes";
 import { createHtmlString } from "../createHtmlString";
-import { getFirstNode } from "../getFirstDomNode";
-import { getNodes } from "../getNodes";
-import { insertElements } from "../insertElements";
 import { onInsert } from "../onInsert";
 import { DisposeFn, Signal, effectInternal } from "../reactive";
-import { removeElements } from "../removeElements";
-import { SmlrElement, SmlrNode } from "../types";
+import { SmlrElement, SmlrNode, SmlrRenderer } from "../types";
 import { ListItem } from "./ListItem";
 
 export class ListElement<Item> implements SmlrElement {
@@ -33,10 +28,11 @@ export class ListElement<Item> implements SmlrElement {
   isInserted = false;
   array;
   _renderItem;
-  _cache: Cache<Item> = new Map();
+  _cache: ListElementCache<Item> = new Map();
   _prevArr!: Item[];
   _getItemKey;
   dispose: DisposeFn | undefined;
+  renderer!: SmlrRenderer;
 
   _getKey(item: Item, index: number) {
     if (this._getItemKey) {
@@ -45,21 +41,13 @@ export class ListElement<Item> implements SmlrElement {
     return item;
   }
 
-  getNodes() {
-    return getNodes(this.children);
-  }
-
-  getFirstNode() {
-    return getFirstNode(this.children);
-  }
-
   onInsert(): void {
     this.isInserted = true;
     onInsert(this.children);
   }
 
   remove(): void {
-    removeElements(this.children);
+    this.renderer.removeElements(this.children);
     this.children.length = 0;
     this._cache.clear();
     this.isInserted = false;
@@ -80,93 +68,16 @@ export class ListElement<Item> implements SmlrElement {
     }
   }
 
-  patch(arr: Item[]) {
-    const oldArr = this._prevArr;
-    const newArr = arr;
-    const oldLen = oldArr.length;
-    const newLen = newArr.length;
-    this._prevArr = [...newArr];
-
-    // fast path for prev empty
-    if (oldLen === 0) {
-      this.create(arr);
-      createDomNodes(this.children);
-      insertElements(this.children);
-    }
-    // fast path for new empty
-    else if (newLen === 0) {
-      const children = [...this.children];
-      removeElements(children);
-      this.children.length = 0;
-      this._cache.clear();
-    }
-    // patch
-    else {
-      const newCache: Cache<Item> = new Map();
-
-      const toInsert: SmlrElement[] = [];
-      const toRemove: SmlrElement[] = [];
-      const toMove: SmlrElement[] = [];
-
-      this.children.length = 0;
-
-      for (let i = 0; i < newLen; i++) {
-        const item = newArr[i];
-        const key = this._getKey(item, i);
-
-        let listItem = this._cache.get(key);
-
-        // exists
-        if (listItem) {
-          // index changed
-          if (listItem.index.value !== i) {
-            listItem.updateIndex(i);
-            toMove.push(...listItem.els);
-          }
-        }
-        // new item
-        else {
-          listItem = new ListItem({ index: i, el: this });
-          toInsert.push(...listItem.els);
-        }
-        newCache.set(key, listItem);
-        this.children.push(...listItem.els);
-      }
-
-      for (let i = 0; i < oldLen; i++) {
-        const item = oldArr[i];
-        const key = this._getKey(item, i);
-        const listItem = newCache.get(key);
-
-        // removed
-        if (!listItem) {
-          const oldListItem = this._cache.get(key);
-          if (oldListItem) {
-            toRemove.push(...oldListItem.els);
-          }
-        }
-      }
-
-      this._cache = newCache;
-
-      removeElements(toRemove);
-      insertElements(toMove);
-      createDomNodes(toInsert);
-      insertElements(toInsert);
-    }
-  }
-
-  toDom(): Node | Node[] {
+  subscribe(onUpdate: (arr: Item[]) => void) {
     let arr: Item[] = [];
 
     this.dispose = effectInternal(() => {
       arr = this.array();
       if (!this.isInserted) return;
-      this.patch(arr);
+      onUpdate(arr);
     });
 
-    this.create(arr);
-    return createDomNodes(this.children);
+    return arr;
   }
 
   toHtml(): string {
@@ -175,7 +86,7 @@ export class ListElement<Item> implements SmlrElement {
   }
 }
 
-type Cache<Item> = Map<CacheKey<Item>, ListItem<Item>>;
+export type ListElementCache<Item> = Map<CacheKey<Item>, ListItem<Item>>;
 
 type RenderItemFn<Item> = (
   item: Signal<Item>,

@@ -19,14 +19,6 @@ export class TextElement implements SmlrElement {
     return !!this.domNode?.isConnected;
   }
 
-  getNodes() {
-    return this.domNode ? [this.domNode] : [];
-  }
-
-  getFirstNode() {
-    return this.domNode;
-  }
-
   toDom() {
     let value = this.text;
 

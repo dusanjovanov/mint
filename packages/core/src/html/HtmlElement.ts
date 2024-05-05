@@ -4,7 +4,6 @@ import {
   SVG_TAGS_MAP,
   VOID_TAGS_MAP,
 } from "../constants";
-import { createDomNodes } from "../createDomNodes";
 import { createHtmlString } from "../createHtmlString";
 import { onInsert } from "../onInsert";
 import { DisposeFn, effectInternal } from "../reactive";
@@ -15,6 +14,7 @@ import {
   HtmlElementTagNameMap,
   HtmlProps,
   SmlrElement,
+  SmlrRenderer,
 } from "../types";
 import {
   addPxIfNeeded,
@@ -43,17 +43,10 @@ export class HtmlElement implements SmlrElement {
   prevData: DataSet | undefined;
   disposeFns: DisposeFn[] = [];
   useCleanup: DisposeFn | undefined;
+  renderer!: SmlrRenderer;
 
   get isInserted() {
     return !!this.domNode?.isConnected;
-  }
-
-  getNodes() {
-    return this.domNode ? [this.domNode] : [];
-  }
-
-  getFirstNode() {
-    return this.domNode;
   }
 
   setStyle(styleObj: any) {
@@ -104,7 +97,7 @@ export class HtmlElement implements SmlrElement {
       ? document.createElementNS("http://www.w3.org/2000/svg", this.tag)
       : document.createElement(this.tag);
 
-    this.domNode.append(...createDomNodes(this.children));
+    this.domNode.append(...this.renderer.createElements(this.children));
 
     entries(this.props).forEach(([key, value]) => {
       if (key === "ref" || key === "use" || key === "node") return;

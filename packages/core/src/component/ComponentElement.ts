@@ -1,14 +1,10 @@
 import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
-import { createDomNodes } from "../createDomNodes";
 import { createHtmlString } from "../createHtmlString";
 import { findAncestorElement } from "../findAncestorElement";
-import { getFirstNode } from "../getFirstDomNode";
-import { getNodes } from "../getNodes";
 import { onInsert } from "../onInsert";
 import { DisposeFn } from "../reactive";
-import { removeElements } from "../removeElements";
 import { resolveNode } from "../resolveNode";
-import { SmlrElement, SmlrNode } from "../types";
+import { SmlrElement, SmlrNode, SmlrRenderer } from "../types";
 import { isElementOfType } from "../utils";
 
 export class ComponentElement<Props> implements SmlrElement {
@@ -34,25 +30,13 @@ export class ComponentElement<Props> implements SmlrElement {
   onInsertCbs: LifecycleCallback[] = [];
   onRemoveCbs: LifecycleCallback[] = [];
   disposers: DisposeFn[] = [];
-
-  getNodes() {
-    return getNodes(this.children);
-  }
-
-  getFirstNode() {
-    return getFirstNode(this.children);
-  }
+  renderer!: SmlrRenderer;
 
   create() {
     currentComponent.current = this;
     const node = this.render(this.props);
     currentComponent.current = null;
     this.children = resolveNode(node, this);
-  }
-
-  toDom() {
-    this.create();
-    return createDomNodes(this.children);
   }
 
   toHtml() {
@@ -68,7 +52,7 @@ export class ComponentElement<Props> implements SmlrElement {
 
   remove() {
     this.disposers.forEach((d) => d());
-    removeElements(this.children);
+    this.renderer.removeElements(this.children);
     this.children.length = 0;
     this.isInserted = false;
     this.onRemoveCbs.forEach((cb) => cb());

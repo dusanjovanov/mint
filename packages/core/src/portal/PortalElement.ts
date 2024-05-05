@@ -1,11 +1,7 @@
 import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
-import { createDomNodes } from "../createDomNodes";
-import { getFirstNode } from "../getFirstDomNode";
-import { getNodes } from "../getNodes";
 import { onInsert } from "../onInsert";
-import { removeElements } from "../removeElements";
 import { resolveNode } from "../resolveNode";
-import { SmlrElement, SmlrNode } from "../types";
+import { SmlrElement, SmlrNode, SmlrRenderer } from "../types";
 
 export class PortalElement implements SmlrElement {
   constructor({ target, node }: PortalProps & { node: SmlrNode }) {
@@ -20,17 +16,10 @@ export class PortalElement implements SmlrElement {
   isInserted = false;
   _target;
   node;
+  renderer!: SmlrRenderer;
 
   get target() {
     return this._target ?? document.body;
-  }
-
-  getNodes() {
-    return getNodes(this.children);
-  }
-
-  getFirstNode() {
-    return getFirstNode(this.children);
   }
 
   onInsert(): void {
@@ -39,7 +28,7 @@ export class PortalElement implements SmlrElement {
   }
 
   remove(): void {
-    removeElements(this.children);
+    this.renderer.removeElements(this.children);
     this.isInserted = false;
   }
 
@@ -49,7 +38,7 @@ export class PortalElement implements SmlrElement {
 
   toDom(): Node | Node[] {
     this.create();
-    this.target.append(...createDomNodes(this.children));
+    this.target.append(...this.renderer.createElements(this.children));
     return [];
   }
 

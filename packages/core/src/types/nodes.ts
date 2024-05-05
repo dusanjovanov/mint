@@ -20,9 +20,6 @@ export type SmlrElement = {
   index: number;
   children?: SmlrElement[];
   isInserted: boolean;
-  getFirstNode(): DomNode | undefined;
-  getNodes(): DomNode[];
-  toDom(): Node | Node[];
   toHtml(): string;
   onInsert(): void;
   remove(): void;

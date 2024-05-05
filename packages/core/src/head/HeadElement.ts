@@ -1,7 +1,6 @@
 import { ELEMENT_BRAND, ELEMENT_TYPES } from "../constants";
-import { createDomNodes } from "../createDomNodes";
 import { resolveNode } from "../resolveNode";
-import { SmlrElement, SmlrNode } from "../types";
+import { SmlrElement, SmlrNode, SmlrRenderer } from "../types";
 import { Head } from "./Head";
 
 export class HeadElement implements SmlrElement {
@@ -16,14 +15,7 @@ export class HeadElement implements SmlrElement {
   nodes;
   children: SmlrElement[] = [];
   head!: Head;
-
-  getNodes() {
-    return [];
-  }
-
-  getFirstNode() {
-    return undefined;
-  }
+  renderer!: SmlrRenderer;
 
   onInsert(): void {
     this.isInserted = true;
@@ -39,7 +31,7 @@ export class HeadElement implements SmlrElement {
 
   toDom(): Node | Node[] {
     this.create();
-    createDomNodes(this.children);
+    this.renderer.createElements(this.children);
     this.head.insert(this.children);
 
     return [];

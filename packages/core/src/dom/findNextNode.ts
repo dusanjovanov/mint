@@ -1,14 +1,15 @@
-import { DomNode, SmlrElement } from "./types";
+import { SmlrElement } from "../types";
+import { getFirstDomNodeFromElement } from "./getFirstDomNode";
 
 export const findNextNode = (
   el: SmlrElement,
   boundary: SmlrElement
-): DomNode | undefined => {
+): Node | undefined => {
   let nextEl = getNextEl(el);
 
   while (nextEl) {
     if (nextEl.isInserted) {
-      const nextNode = nextEl.getFirstNode();
+      const nextNode = getFirstDomNodeFromElement(nextEl);
       if (nextNode) {
         return nextNode;
       }
