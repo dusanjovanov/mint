@@ -30,7 +30,6 @@
   "author": "Dusan Jovanov",
   "license": "MIT",
   "dependencies": {
-    "@smlr/core": "workspace:*",
     "@tanstack/query-core": "^5.29.0"
   },
   "devDependencies": {
@@ -38,5 +37,8 @@
     "tsup": "^7.1.0",
     "typescript": "^5.1.6",
     "vitest": "^0.34.2"
+  },
+  "peerDependencies": {
+    "@smlr/core": "*"
   }
 }

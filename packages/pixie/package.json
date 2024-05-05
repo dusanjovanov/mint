@@ -1,0 +1,44 @@
+{
+  "name": "@smlr/pixie",
+  "version": "0.0.1",
+  "author": "Dusan Jovanov",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dusanjovanov/smlr"
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "devDependencies": {
+    "prettier": "2.8",
+    "tsup": "^7.1.0",
+    "typescript": "^5.1.6",
+    "vitest": "^0.34.2"
+  },
+  "peerDependencies": {
+    "@smlr/core": "*"
+  },
+  "exports": {
+    "require": "./dist/index.cjs",
+    "types": "./dist/index.d.ts",
+    "default": "./dist/index.js"
+  },
+  "description": "Pixie for smlr",
+  "keywords": [
+    "pixie",
+    "smlr"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "size": "npx pkg-size",
+    "types": "tsc",
+    "test": "vitest run",
+    "test-dev": "vitest"
+  },
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "pixi.js": "^8.1.1"
+  }
+}

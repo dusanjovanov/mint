@@ -10,5 +10,8 @@
     "url": "https://github.com/dusanjovanov/smlr"
   },
   "author": "Dusan Jovanov",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "pixie": "^2.0.0"
+  }
 }
